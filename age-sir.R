@@ -126,4 +126,5 @@ lines(results$time,
 legend("topright",
        legend=c("0-25","25-50", "50-75", ">75"),
        col=c(2,3,4,5),
-       lwd=2)
+       lwd=2,
+       title = "Infected")
