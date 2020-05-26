@@ -1,4 +1,4 @@
-# Comparmental models for COVID-19 analysis in Italian provinces
+# Compartmental models for COVID-19 analysis in Italian provinces
 
 The COVID-19 outbreak in Italy has spread mainly in northern regions, particularly in Lombardy. However, even within the same region the virus has spread irregularly from province to province, producing real epicenters of infection in some provinces but also affecting other areas with relatively lower intensity.
 
