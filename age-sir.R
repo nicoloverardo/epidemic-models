@@ -83,6 +83,7 @@ results <- as.data.frame(lsoda(inits, vt, calc_deriv, vparameters))
 # Plots
 par(mfrow<-c(1,1))
 
+# I
 plot(results$time,
      results$I1/N[1],
      type="l",
@@ -91,7 +92,7 @@ plot(results$time,
      ylim=c(0,1),
      lwd=2,
      col=2,
-     main="Age-structured SIR")
+     main="Age-structured SIR (I)")
 lines(results$time,
       results$I2/N[2],
       col=3,
@@ -104,27 +105,61 @@ lines(results$time,
       results$I4/N[4],
       col=5,
       lwd=2)
-
-# lines(results$time,
-#       results$S1/N[1],
-#       col=4,
-#       lwd=2)
-# lines(results$time,
-#       results$S2/N[2],
-#       col=5,
-#       lwd=2)
-# 
-# lines(results$time,
-#       results$R1/N[1],
-#       col=6,
-#       lwd=2)
-# lines(results$time,
-#       results$R2/N[2],
-#       col=7,
-#       lwd=2)
-
 legend("topright",
        legend=c("0-25","25-50", "50-75", ">75"),
        col=c(2,3,4,5),
-       lwd=2,
-       title = "Infected")
+       lwd=2)
+
+# S
+plot(results$time,
+     results$S1/N[1],
+     type="l",
+     xlab="days",
+     ylab="Individuals",
+     ylim=c(0,1),
+     lwd=2,
+     col=2,
+     main="Age-structured SIR (S)")
+lines(results$time,
+      results$S2/N[2],
+      col=3,
+      lwd=2)
+lines(results$time,
+      results$S3/N[3],
+      col=4,
+      lwd=2)
+lines(results$time,
+      results$S4/N[4],
+      col=5,
+      lwd=2)
+legend("topright",
+       legend=c("0-25","25-50", "50-75", ">75"),
+       col=c(2,3,4,5),
+       lwd=2)
+
+# R
+plot(results$time,
+     results$R1/N[1],
+     type="l",
+     xlab="days",
+     ylab="Individuals",
+     ylim=c(0,1),
+     lwd=2,
+     col=2,
+     main="Age-structured SIR (R)")
+lines(results$time,
+      results$R2/N[2],
+      col=3,
+      lwd=2)
+lines(results$time,
+      results$R3/N[3],
+      col=4,
+      lwd=2)
+lines(results$time,
+      results$R4/N[4],
+      col=5,
+      lwd=2)
+legend("topright",
+       legend=c("0-25","25-50", "50-75", ">75"),
+       col=c(2,3,4,5),
+       lwd=2)
