@@ -4,29 +4,31 @@ library(deSolve)
 # vparameters are gamma, beta and the contact matrix C
 calc_deriv<-function(t, x, vparameters)
 {
-  n_compartment <- 3
+  n_compartment <- 4
   n_age <- length(x)/n_compartment
   
   S <- as.matrix(x[1:n_age])
   I <- as.matrix(x[(n_age+1):(2*n_age)])
   R <- as.matrix(x[(2*n_age+1):(3*n_age)])
+  D <- as.matrix(x[(3*n_age+1):(4*n_age)])
   
   I[I<0] <- 0
   with(as.list(vparameters),
        {
          # dS, dI, dR, S, I, R and N will be of length n_age
-         N <- S+I+R
+         N <- S+I+R+D
          dS <- -as.matrix(S*beta)*(as.matrix(C)%*%as.matrix(I/N))
-         dI <- -dS - gamma*as.matrix(I)
+         dI <- -dS - gamma*as.matrix(I) - alpha*rho*as.matrix(I)
          dR <- +gamma*as.matrix(I)
+         dD <- +alpha*rho*as.matrix(I)
          
-         out <- list(c(dS,dI,dR))
+         out <- list(c(dS,dI,dR,dD))
        })
 }
 
 # Example
 # Turin
-dataistat <- read_csv("pop_prov_age.csv")
+dataistat <- read.csv("pop_prov_age.csv")
 data_to <- dataistat[dataistat$Territorio == "Torino",]
 pop <- data_to$Value[data_to$Eta == "Total"]
 class_percent <- data_to$Percentage[data_to$Eta != "Total"]
@@ -40,6 +42,7 @@ n_age <- length(class_percent)
 I_0 <- rep(1, n_age)
 S_0 <- N-I_0
 R_0 <- rep(0, n_age)
+D_0 <- rep(0, n_age)
 
 # Days
 D <- 7
@@ -47,16 +50,22 @@ D <- 7
 # Recovery period
 gamma <- 1/D
 
+# Death rate
+alpha <- 0.05
+# Days that take an infected individual to die
+rho <- 1/6
+
+
 # We'll need a way to estimate R0
 R0 <- 3
 
 # Contact matrix. Don't know if we have data for that
 # Page 20-21 of Rock K., Brand S., Moir J., Keeling M.J., Dynamics of Infectious Diseases
 C <- matrix(c(2.42, 1.26, 0.80, 0.01,
-         1.26, 2.16, 0.20, 0.01,
-         0.80, 0.20, 0.75, 0.01,
-         0.01, 0.01, 0.01, 0.01),
-         nrow = 4, ncol = 4)
+              1.26, 2.16, 0.20, 0.01,
+              0.80, 0.20, 0.75, 0.01,
+              0.01, 0.01, 0.01, 0.01),
+            nrow = 4, ncol = 4)
 
 M <- C
 
@@ -73,8 +82,8 @@ beta <- R0*gamma/max(Re(eig$values))
 beta <- beta
 
 # Solve the model
-vparameters <- c(gamma = gamma, beta = beta, C = C)
-inits = c(S=S_0,I=I_0,R=R_0)
+vparameters <- c(gamma = gamma, beta = beta, alpha = alpha, rho = rho, C = C)
+inits = c(S=S_0,I=I_0,R=R_0, D=D_0)
 
 # S,I and R for various t
 vt <- seq(10, 200, 1)  
@@ -157,6 +166,33 @@ lines(results$time,
       lwd=2)
 lines(results$time,
       results$R4/N[4],
+      col=5,
+      lwd=2)
+legend("topright",
+       legend=c("0-25","25-50", "50-75", ">75"),
+       col=c(2,3,4,5),
+       lwd=2)
+
+# D
+plot(results$time,
+     results$D1/N[1],
+     type="l",
+     xlab="days",
+     ylab="Individuals",
+     ylim=c(0,1),
+     lwd=2,
+     col=2,
+     main="Age-structured SIR (D)")
+lines(results$time,
+      results$D2/N[2],
+      col=3,
+      lwd=2)
+lines(results$time,
+      results$D3/N[3],
+      col=4,
+      lwd=2)
+lines(results$time,
+      results$D4/N[4],
       col=5,
       lwd=2)
 legend("topright",
