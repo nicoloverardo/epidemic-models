@@ -21,11 +21,13 @@ mediumrisk <- class_pop[2] + class_pop[3]
 x <- sample(highrisk, 1000)
 d <- sample(mediumrisk, 1000)
 
-#from google mobility data, community is divided into PARKS,SHOPS,WORK AND RECREATION
-#AND BY MAKING A MARKOV CHAIN,it seems high risk and medium risk people has most interation 
-#where high risk people r morevurnerable to get the disease  so selected p=0.40
-
+# Looking at Google Mobility data, the community is divided into 
+# PARKS, SHOPS, WORK and RECREATION. By MAKING A MARKOV CHAIN,
+# it seems that high risk and medium risk people has most interation.
+# High risk people are more vurnerable to get the disease.
+# Thus the selection of p=0.40
 idx <- createDataPartition(x, p=0.40, list=FALSE)
+
 k <- rnorm(d)
 
 nll <- function(theta0,theta1) {
