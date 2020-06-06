@@ -50,3 +50,6 @@ w <- data.frame(y,y1)
 glm.fit <-  glm(log(y)~y1,data=w)
 pred.lm <- predict(glm.fit, w)
 mean(pred.lm)
+j <- mean(pred.lm)
+percnt <- j/600 *100
+percnt
