@@ -4,7 +4,7 @@ library(caret)
 
 # Example
 # Turin
-dataistat <- read.csv("pop_prov_age.csv")
+dataistat <- read.csv("data/istat/pop_prov_age.csv")
 data_to <- dataistat[dataistat$Territorio == "Torino",]
 pop <- data_to$Value[data_to$Eta == "Total"]
 class_pop <- data_to$Value[data_to$Eta != "Total"]
