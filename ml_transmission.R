@@ -2,6 +2,39 @@ library(stats)
 library(stats4)
 library(caret)
 
+# THIS PERCENTAGES ARE AN EXAMPLE FOR TORINO
+# WILL NEED TO CHANGE ACCORDING TO THE PROVINCE
+get_risk_p <- function(groups) 
+{
+  if (groups[1] == groups[2] == "highrisk")
+  {
+    return(0.8)
+  }
+  else if (groups[1] == groups[2] == "mediumrisk")
+  {
+    return(0.7)
+  }
+  else if (groups[1] == groups[2] == "lowrisk")
+  {
+    return(0.2)
+  }
+  else if ((groups[1] == "highrisk" && groups[2] == "mediumrisk") ||
+           (groups[1] == "mediumrisk" && groups[2] == "lowrisk"))
+  {
+    return(0.4)
+  }
+  else if ((groups[1] == "highrisk" && groups[2] == "lowrisk") ||
+           (groups[1] == "lowrisk" && groups[2] == "highrisk"))
+  {
+    return(0.2)
+  }
+  else if ((groups[1] == "mediumrisk" && groups[2] == "lowrisk") ||
+           (groups[1] == "lowrisk" && groups[2] == "mediumrisk"))
+  {
+    return(0.2)
+  }
+}
+
 estimate_contact_matrix <- function(province, groups)
 {
   # Load data from Istat csv
@@ -21,18 +54,13 @@ estimate_contact_matrix <- function(province, groups)
   
   # Sample size
   N <- 1000
-  p <- 0.4
+  p <- get_risk_p(groups)
   n1 <- N*p
   n2 <- N-n1
   
   x <- sample(eval(parse(text = groups[1])), N)
   d <- sample(eval(parse(text = groups[2])), N)
   
-  # Looking at Google Mobility data, the community is divided into 
-  # PARKS, SHOPS, WORK and RECREATION. By MAKING A MARKOV CHAIN,
-  # it seems that high risk and medium risk people has most interation.
-  # High risk people are more vurnerable to get the disease.
-  # Thus the selection of p=0.40
   idx <- createDataPartition(x, p=p, list=FALSE)
   
   k <- rnorm(d)
