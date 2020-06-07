@@ -1,3 +1,4 @@
+source("ml_transmission.R")
 library(deSolve)
 
 # x is a vector of length (#model compartment types)*(#age classes)
@@ -28,10 +29,11 @@ calc_deriv<-function(t, x, vparameters)
 
 # Example
 # Turin
-dataistat <- read.csv("pop_prov_age.csv")
+dataistat <- read.csv("data/istat/pop_prov_age.csv")
 data_to <- dataistat[dataistat$Territorio == "Torino",]
 pop <- data_to$Value[data_to$Eta == "Total"]
 class_percent <- data_to$Percentage[data_to$Eta != "Total"]
+class_percent <- c(class_percent[1], class_percent[2] + class_percent[3], class_percent[4])
 
 # number in each age class
 N <- pop*class_percent
@@ -59,18 +61,27 @@ rho <- 1/6
 # We'll need a way to estimate R0
 R0 <- 3
 
-# Contact matrix. Don't know if we have data for that
-# Page 20-21 of Rock K., Brand S., Moir J., Keeling M.J., Dynamics of Infectious Diseases
-C <- matrix(c(2.42, 1.26, 0.80, 0.01,
-              1.26, 2.16, 0.20, 0.01,
-              0.80, 0.20, 0.75, 0.01,
-              0.01, 0.01, 0.01, 0.01),
-            nrow = 4, ncol = 4)
+# Estimate contact matrix C
+province <- "Torino"
+a11 <- estimate_contact_matrix(province, c("highrisk", "highrisk"))[1]
+a12 <- estimate_contact_matrix(province, c("highrisk", "mediumrisk"))[1]
+a13 <- estimate_contact_matrix(province, c("highrisk", "lowrisk"))[1]
+b11 <- estimate_contact_matrix(province, c("mediumrisk", "highrisk"))[1]
+b12 <- estimate_contact_matrix(province, c("mediumrisk", "mediumrisk"))[1]
+b13 <- estimate_contact_matrix(province, c("mediumrisk", "lowrisk"))[1]
+c11 <- estimate_contact_matrix(province, c("lowrisk", "highrisk"))[1]
+c12 <- estimate_contact_matrix(province, c("lowrisk", "mediumrisk"))[1]
+c13 <- estimate_contact_matrix(province, c("lowrisk", "lowrisk"))[1]
+
+C <- matrix(c(a11, a12, a13,
+              b11, b12, b13,
+              c11, c12, c13),
+            nrow = 3, ncol = 3)
 
 M <- C
 
-for (i in 1:4){
-  for (j in 1:4){
+for (i in 1:n_age){
+  for (j in 1:n_age){
     M[i,j] <- C[i,j]*class_percent[i]/class_percent[j]
   }
 }
@@ -110,13 +121,9 @@ lines(results$time,
       results$I3/N[3],
       col=4,
       lwd=2)
-lines(results$time,
-      results$I4/N[4],
-      col=5,
-      lwd=2)
 legend("topright",
-       legend=c("0-25","25-50", "50-75", ">75"),
-       col=c(2,3,4,5),
+       legend=c("0-25","25-75", ">75"),
+       col=c(2,3,4),
        lwd=2)
 
 # S
@@ -137,13 +144,9 @@ lines(results$time,
       results$S3/N[3],
       col=4,
       lwd=2)
-lines(results$time,
-      results$S4/N[4],
-      col=5,
-      lwd=2)
 legend("topright",
-       legend=c("0-25","25-50", "50-75", ">75"),
-       col=c(2,3,4,5),
+       legend=c("0-25","25-75", ">75"),
+       col=c(2,3,4),
        lwd=2)
 
 # R
@@ -164,13 +167,9 @@ lines(results$time,
       results$R3/N[3],
       col=4,
       lwd=2)
-lines(results$time,
-      results$R4/N[4],
-      col=5,
-      lwd=2)
 legend("topright",
-       legend=c("0-25","25-50", "50-75", ">75"),
-       col=c(2,3,4,5),
+       legend=c("0-25","25-75", ">75"),
+       col=c(2,3,4),
        lwd=2)
 
 # D
@@ -191,11 +190,7 @@ lines(results$time,
       results$D3/N[3],
       col=4,
       lwd=2)
-lines(results$time,
-      results$D4/N[4],
-      col=5,
-      lwd=2)
 legend("topright",
-       legend=c("0-25","25-50", "50-75", ">75"),
-       col=c(2,3,4,5),
+       legend=c("0-25","25-75", ">75"),
+       col=c(2,3,4),
        lwd=2)
