@@ -29,8 +29,9 @@ calc_deriv<-function(t, x, vparameters)
 
 # Example
 # Turin
+province <- "Torino"
 dataistat <- read.csv("data/istat/pop_prov_age.csv")
-data_to <- dataistat[dataistat$Territorio == "Torino",]
+data_to <- dataistat[dataistat$Territorio == province,]
 pop <- data_to$Value[data_to$Eta == "Total"]
 class_percent <- data_to$Percentage[data_to$Eta != "Total"]
 class_percent <- c(class_percent[1], class_percent[2] + class_percent[3], class_percent[4])
@@ -62,7 +63,6 @@ rho <- 1/6
 R0 <- 3
 
 # Estimate contact matrix C
-province <- "Torino"
 a11 <- estimate_contact_matrix(province, c("highrisk", "highrisk"))[1]
 a12 <- estimate_contact_matrix(province, c("highrisk", "mediumrisk"))[1]
 a13 <- estimate_contact_matrix(province, c("highrisk", "lowrisk"))[1]
