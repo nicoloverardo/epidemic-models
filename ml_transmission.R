@@ -6,15 +6,15 @@ library(caret)
 # WILL NEED TO CHANGE ACCORDING TO THE PROVINCE
 get_risk_p <- function(groups) 
 {
-  if (groups[1] == groups[2] == "highrisk")
+  if (all.equal(groups[1], groups[2], "highrisk"))
   {
     return(0.8)
   }
-  else if (groups[1] == groups[2] == "mediumrisk")
+  else if (all.equal(groups[1], groups[2], "mediumrisk"))
   {
     return(0.7)
   }
-  else if (groups[1] == groups[2] == "lowrisk")
+  else if (all.equal(groups[1], groups[2], "lowrisk"))
   {
     return(0.2)
   }
