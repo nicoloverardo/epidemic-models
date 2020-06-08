@@ -24,7 +24,7 @@ x <- sample(mediumrisk) #getting sample/combination of population
 d <- sample(highrisk) #getting sample/combination of population 
 
 #p is division between people infected and not infected in a population.
-#p=0.40  means 90 percent of population is not infected
+#p=0.40  means 40 percent of population is not infected
 
 idx <- createDataPartition(x, p=0.40, list=FALSE)
 
