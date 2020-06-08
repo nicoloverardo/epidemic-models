@@ -112,6 +112,9 @@ mat <- contact_matrix(polymod,
                       survey.pop = survey_pop,
                       symmetric = TRUE)
 
+# 'mat' will contain a field 'matrices' with n matrices, where
+# n is the param we specified above in the bootstrap. 'Reduce'
+# will average them.
 C <- Reduce("+", lapply(mat$matrices, function(x) {x$matrix})) / length(mat$matrices)
 class_percent <- mat$participants$proportion
 M <- C
