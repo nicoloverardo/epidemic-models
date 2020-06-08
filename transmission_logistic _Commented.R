@@ -4,19 +4,18 @@ library(caret)
 
 # Example
 # Turin
-dataistat <- read.csv("C:/Users/ADMIN/Desktop/covid19/New folder (3)/epidemic-models/data/istat/pop_prov_age.csv")
-data_to <- dataistat[dataistat$Territorio == "Torino",]
+# Load data from Istat csv
+dataistat <- read.csv("data/istat/pop_prov_age_3_groups.csv")
+data_to <- dataistat[dataistat$Territorio == province,]
 pop <- data_to$Value[data_to$Eta == "Total"]
 class_pop <- data_to$Value[data_to$Eta != "Total"]
-
-# We're gonna need to turn this into 4 groups and
-# calculate this for each group
-
+  
 # 75-100
-highrisk <- class_pop[4]
-
-# 25-50 + 50-75
-mediumrisk <- class_pop[2] + class_pop[3]
+highrisk <- class_pop[3]
+# 25-75
+mediumrisk <- class_pop[2]
+# 0-25
+lowrisk <- class_pop[1]
 
 #finding how already infected high risk people can infect medium risk people
 
