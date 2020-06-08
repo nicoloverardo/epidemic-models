@@ -38,16 +38,16 @@ get_risk_p <- function(groups)
 estimate_contact_matrix <- function(province, groups)
 {
   # Load data from Istat csv
-  dataistat <- read.csv("data/istat/pop_prov_age.csv")
+  dataistat <- read.csv("data/istat/pop_prov_age_3_groups.csv")
   data_to <- dataistat[dataistat$Territorio == province,]
   pop <- data_to$Value[data_to$Eta == "Total"]
   class_pop <- data_to$Value[data_to$Eta != "Total"]
   
   # 75-100
-  highrisk <- class_pop[4]
+  highrisk <- class_pop[3]
   
-  # 25-50 + 50-75
-  mediumrisk <- class_pop[2] + class_pop[3]
+  # 25-75
+  mediumrisk <- class_pop[2]
   
   # 0-25
   lowrisk <- class_pop[1]
@@ -76,8 +76,7 @@ estimate_contact_matrix <- function(province, groups)
   y <- as.vector(x[-idx])
   
   # MLE
-  est <- stats4::mle(minuslog=nll, start=list(theta0=2, theta1=0))
-  summary(est)
+  #est <- stats4::mle(minuslog=nll, start=list(theta0=2, theta1=0))
   
   y1 <- sample(x1, N-(N*p))
   w <- data.frame(y, y1)
