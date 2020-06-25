@@ -2,8 +2,10 @@ source("age-sird.R")
 library(rjson)
 library(plotly)
 
+days = 122
+
 # Get predictions
-results <- sirdModel()
+results <- sirdModel(province="Torino", days=days)
 
 ### SIRD plots
 par(mfrow<-c(1,1))
@@ -153,37 +155,27 @@ mp
 reg <- "Piemonte"
 pcmreg <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv")
 pcmreg <- pcmreg[pcmreg$denominazione_regione==reg,]
-
-res_torino <- sirdModel(province="Torino")
-res_alessandria <- sirdModel(province="Alessandria")
-res_asti <- sirdModel(province="Asti")
-res_biella <- sirdModel(province="Biella")
-res_cuneo <- sirdModel(province="Cuneo")
-res_novara <- sirdModel(province="Novara")
-res_vco <- sirdModel(province="Verbano-Cusio-Ossola")
-res_vercelli <- sirdModel(province="Vercelli")
-
-res_piemonte <- aggregate(. ~ time, rbind(res_torino,
-                                          res_alessandria,
-                                          res_asti,
-                                          res_biella,
-                                          res_cuneo,
-                                          res_novara,
-                                          res_vco,
-                                          res_vercelli), sum)
-
-contag_reg <- get_contagiati_cumul(res_piemonte)
+dataistat <- read.csv("data/istat/pop_prov_age_3_groups.csv")
 
 lista_prov <- c("Torino", "Alessandria", "Asti", "Biella", "Cuneo", "Novara", "Verbano-Cusio-Ossola", "Vercelli")
-dataistat <- read.csv("data/istat/pop_prov_age_3_groups.csv")
+res_reg <- as.data.frame(matrix(0, ncol = 13, nrow = days))
+colnames(res_reg) <- c("time","S1","S2","S3","I1","I2","I3","R1","R2","R3","D1","D2","D3")
+
 N <- 0
 for (p in lista_prov){
+  res <- sirdModel(province=p)
+  res_reg <- aggregate(. ~ time, rbind(res_reg, res), sum)
   data_prov <- dataistat[dataistat$Territorio == p,]
   N <- N + data_prov$Value[data_prov$Eta == "Total"]
 }
 
-mreg <- plot_ly(res_piemonte, 
-              x = res_piemonte$time, 
+# Need to remove first empty row, R is misterious
+res_reg <- res_reg[-c(1),]
+
+contag_reg <- get_contagiati_cumul(res_reg)
+
+mreg <- plot_ly(res_reg, 
+              x = res_reg$time, 
               y = (contag_reg$contagiati_g1+contag_reg$contagiati_g2+contag_reg$contagiati_g3)/N,
               type = 'scatter',
               mode = 'lines+markers',
