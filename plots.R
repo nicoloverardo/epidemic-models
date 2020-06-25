@@ -165,7 +165,6 @@ reg <- "Piemonte"
 pcmreg <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv")
 pcmreg <- pcmreg[pcmreg$denominazione_regione==reg,]
 
-
 lista_prov <- c("Torino", "Alessandria", "Asti", "Biella", "Cuneo", "Novara", "Verbano-Cusio-Ossola", "Vercelli")
 res_reg <- as.data.frame(matrix(0, ncol = 13, nrow = days))
 colnames(res_reg) <- c("time","S1","S2","S3","I1","I2","I3","R1","R2","R3","D1","D2","D3")
@@ -198,6 +197,39 @@ mreg <- mreg %>%
   )
 mreg
 
+infplot <- plot_ly(results, 
+                   x = results$time, 
+                   y = results$I1+results$I2+results$I3,
+                   type = 'scatter',
+                   mode = 'lines+markers',
+                   line = list(color = 'rgb(205, 12, 24)', width = 4),
+                   name = "Prediction")
+infplot <- infplot %>% add_trace(y = pcmreg$totale_positivi, name = 'Real data', mode = 'markers')
+infplot <- infplot %>%
+  layout(
+    title = paste("Cumulative postive",reg),
+    xaxis = list(title = "Days"),
+    yaxis = list (title = "% Individuals")
+  )
+infplot
+
+
+# --------------------------------------------
+reg <- "Piemonte"
+lista_prov <- c("Torino", "Alessandria", "Asti", "Biella", "Cuneo", "Novara", "Verbano-Cusio-Ossola", "Vercelli")
+res_reg <- as.data.frame(matrix(0, ncol = 13, nrow = days))
+colnames(res_reg) <- c("time","S1","S2","S3","I1","I2","I3","R1","R2","R3","D1","D2","D3")
+
+N <- 0
+for (p in lista_prov){
+  res <- sirdModel(province=p)
+  res_reg <- aggregate(. ~ time, rbind(res_reg, res), sum)
+  N <- N + get_tot_population(p)
+}
+
+
+
+
 # --------------------------------------------
 ### Plot alex
 
@@ -205,8 +237,8 @@ I1 <- results$I1
 I2 <- results$I2
 I3 <- results$I3
 
-data <- ("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-province-latest.json") 
-data1 <- fromJSON(file=data)
+#data <- ("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-province-latest.json") 
+#data1 <- fromJSON(file=data)
 
 p <-
   plot_ly(
