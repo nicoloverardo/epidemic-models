@@ -21,23 +21,21 @@ region <- "Valle d'Aosta"
 y <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv")
 y <- y[y$denominazione_regione==region,]
 
-plot(results$time,
-     (contagiati$contagiati_g1+contagiati$contagiati_g2+contagiati$contagiati_g3)/(N[1]+N[2]+N[3]),
-     type="l",
-     xlab="days",
-     ylab="Individuals",
-     lwd=2,
-     col=2,
-     main=paste("Contagiati",province))
-lines(results$time,
-      y$totale_casi/(N[1]+N[2]+N[3]),
-      col=3,
-      lwd=2)
-legend("topright",
-       legend=c("Previsione","Reale"),
-       col=c(2,3),
-       lwd=2)
-
+mp <- plot_ly(results, 
+              x = results$time, 
+              y = (contagiati$contagiati_g1+contagiati$contagiati_g2+contagiati$contagiati_g3)/(N[1]+N[2]+N[3]),
+              type = 'scatter',
+              mode = 'lines+markers',
+              line = list(color = 'rgb(205, 12, 24)', width = 4),
+              name = "Prediction")
+mp <- mp %>% add_trace(y = y$totale_casi/(N[1]+N[2]+N[3]), name = 'Real data', mode = 'markers')
+mp <- mp %>%
+  layout(
+    title = "Cumulative cases",
+    xaxis = list(title = "Days"),
+    yaxis = list (title = "% Individuals")
+  )
+mp
 
 ### Plot alex
 
@@ -56,7 +54,7 @@ p <-
     x = results$time,
     y =  I1+I2+I3,
     type = 'scatter',
-    mode = 'line+markers',
+    mode = 'lines+markers',
     line = list(color = 'rgb(205, 12, 24)', width = 4)
   )
 p <- p %>% add_trace(y =I1 , name = 'MEDIUM PREDICTION',mode = 'markers')
@@ -65,11 +63,11 @@ p <- p %>% add_trace(y =I3 , name = 'LOW RISK PREDICTION',mode = 'markers')
 p <- p %>% add_trace(y =I3 , name = 'LOW RISK PREDICTION',mode = 'markers')
 
 
-p %>%
+p <- p %>%
   layout(
-    title = "Totacl Cases",
+    title = "Total Cases",
     xaxis = list(title = "Time"),
-    yaxis = list (title = "Age Groups")
+    yaxis = list (title = "Individuals")
   )
 p
 
