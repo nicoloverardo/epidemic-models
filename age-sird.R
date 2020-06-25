@@ -61,7 +61,7 @@ rho <- 1/6
 
 # We'll need to estimate from the data like 
 # it's done in the app
-R0 <- 1.5
+R0 <- 3
 
 #####
 # Estimate contact matrix C using our logistic regr.
@@ -129,7 +129,7 @@ vparameters <- c(gamma = gamma, beta = beta, alpha = alpha, rho = rho, C = C)
 inits = c(S=S_0,I=I_0,R=R_0, D=D_0)
 
 # S,I and R for various t
-vt <- seq(1, 121, 1)
+vt <- seq(1, 122, 1)
 results <- as.data.frame(lsoda(inits, vt, calc_deriv, vparameters))
 
 # Plots
