@@ -1,3 +1,106 @@
+source("age-sird.R")
+
+# Get predictions
+results <- sirdModel()
+
+### SIRD plots
+par(mfrow<-c(1,1))
+ymax = max(c(results$I1,results$I2, results$I3))
+
+# I
+plot(results$time,
+     results$I1,
+     type="l",
+     xlab="days",
+     ylab="Individuals",
+     ylim=c(0,ymax),
+     lwd=2,
+     col=2,
+     main="Age-structured SIR (I)")
+lines(results$time,
+      results$I2,
+      col=3,
+      lwd=2)
+lines(results$time,
+      results$I3,
+      col=4,
+      lwd=2)
+legend("topright",
+       legend=c("0-25","25-75", ">75"),
+       col=c(2,3,4),
+       lwd=2)
+
+# S
+plot(results$time,
+     results$S1/N[1],
+     type="l",
+     xlab="days",
+     ylab="Individuals",
+     ylim=c(0,1),
+     lwd=2,
+     col=2,
+     main="Age-structured SIR (S)")
+lines(results$time,
+      results$S2/N[2],
+      col=3,
+      lwd=2)
+lines(results$time,
+      results$S3/N[3],
+      col=4,
+      lwd=2)
+legend("topright",
+       legend=c("0-25","25-75", ">75"),
+       col=c(2,3,4),
+       lwd=2)
+
+# R
+plot(results$time,
+     results$R1/N[1],
+     type="l",
+     xlab="days",
+     ylab="Individuals",
+     ylim=c(0,1),
+     lwd=2,
+     col=2,
+     main="Age-structured SIR (R)")
+lines(results$time,
+      results$R2/N[2],
+      col=3,
+      lwd=2)
+lines(results$time,
+      results$R3/N[3],
+      col=4,
+      lwd=2)
+legend("topright",
+       legend=c("0-25","25-75", ">75"),
+       col=c(2,3,4),
+       lwd=2)
+
+# D
+plot(results$time,
+     results$D1/N[1],
+     type="l",
+     xlab="days",
+     ylab="Individuals",
+     ylim=c(0,1),
+     lwd=2,
+     col=2,
+     main="Age-structured SIR (D)")
+lines(results$time,
+      results$D2/N[2],
+      col=3,
+      lwd=2)
+lines(results$time,
+      results$D3/N[3],
+      col=4,
+      lwd=2)
+legend("topright",
+       legend=c("0-25","25-75", ">75"),
+       col=c(2,3,4),
+       lwd=2)
+
+
+# Other plots
 contagiati_g1 <- vector("list", nrow(results))
 contagiati_g2 <- vector("list", nrow(results))
 contagiati_g3 <- vector("list", nrow(results))
@@ -17,9 +120,9 @@ contagiati_g3 <- do.call("rbind",contagiati_g3)
 
 contagiati <- data.frame(contagiati_g1, contagiati_g2, contagiati_g3)
 
-region <- "Valle d'Aosta"
-y <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv")
-y <- y[y$denominazione_regione==region,]
+prov <- "Torino"
+pcmprov <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-province/dpc-covid19-ita-province.csv")
+pcmprov <- pcmprov[pcmprov$denominazione_provincia==prov,]
 
 mp <- plot_ly(results, 
               x = results$time, 
@@ -28,14 +131,16 @@ mp <- plot_ly(results,
               mode = 'lines+markers',
               line = list(color = 'rgb(205, 12, 24)', width = 4),
               name = "Prediction")
-mp <- mp %>% add_trace(y = y$totale_casi/(N[1]+N[2]+N[3]), name = 'Real data', mode = 'markers')
+mp <- mp %>% add_trace(y = pcmprov$totale_casi/(N[1]+N[2]+N[3]), name = 'Real data', mode = 'markers')
 mp <- mp %>%
   layout(
-    title = "Cumulative cases",
+    title = paste("Cumulative cases",prov),
     xaxis = list(title = "Days"),
     yaxis = list (title = "% Individuals")
   )
 mp
+
+pcmreg <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv")
 
 ### Plot alex
 
