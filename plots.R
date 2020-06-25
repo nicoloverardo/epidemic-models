@@ -207,28 +207,11 @@ infplot <- plot_ly(results,
 infplot <- infplot %>% add_trace(y = pcmreg$totale_positivi, name = 'Real data', mode = 'markers')
 infplot <- infplot %>%
   layout(
-    title = paste("Cumulative postive",reg),
+    title = paste("Cumulative positive (infected)",reg),
     xaxis = list(title = "Days"),
     yaxis = list (title = "% Individuals")
   )
 infplot
-
-
-# --------------------------------------------
-reg <- "Piemonte"
-lista_prov <- c("Torino", "Alessandria", "Asti", "Biella", "Cuneo", "Novara", "Verbano-Cusio-Ossola", "Vercelli")
-res_reg <- as.data.frame(matrix(0, ncol = 13, nrow = days))
-colnames(res_reg) <- c("time","S1","S2","S3","I1","I2","I3","R1","R2","R3","D1","D2","D3")
-
-N <- 0
-for (p in lista_prov){
-  res <- sirdModel(province=p)
-  res_reg <- aggregate(. ~ time, rbind(res_reg, res), sum)
-  N <- N + get_tot_population(p)
-}
-
-
-
 
 # --------------------------------------------
 ### Plot alex
