@@ -127,20 +127,29 @@ get_contagiati_cumul <- function(results){
   contagiati <- data.frame(contagiati_g1, contagiati_g2, contagiati_g3)
 }
 
+get_tot_population <- function(province){
+  data_prov <- dataistat[dataistat$Territorio == province,]
+  return(data_prov$Value[data_prov$Eta == "Total"])
+}
+
+dataistat <- read.csv("data/istat/pop_prov_age_3_groups.csv")
+results <- sirdModel(province="Torino", days=days)
 contagiati <- get_contagiati_cumul(results)
 
 prov <- "Torino"
 pcmprov <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-province/dpc-covid19-ita-province.csv")
 pcmprov <- pcmprov[pcmprov$denominazione_provincia==prov,]
 
+N <- get_tot_population(prov)
+
 mp <- plot_ly(results, 
               x = results$time, 
-              y = (contagiati$contagiati_g1+contagiati$contagiati_g2+contagiati$contagiati_g3)/(N[1]+N[2]+N[3]),
+              y = (contagiati$contagiati_g1+contagiati$contagiati_g2+contagiati$contagiati_g3)/N,
               type = 'scatter',
               mode = 'lines+markers',
               line = list(color = 'rgb(205, 12, 24)', width = 4),
               name = "Prediction")
-mp <- mp %>% add_trace(y = pcmprov$totale_casi/(N[1]+N[2]+N[3]), name = 'Real data', mode = 'markers')
+mp <- mp %>% add_trace(y = pcmprov$totale_casi/N, name = 'Real data', mode = 'markers')
 mp <- mp %>%
   layout(
     title = paste("Cumulative cases",prov),
@@ -155,7 +164,7 @@ mp
 reg <- "Piemonte"
 pcmreg <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv")
 pcmreg <- pcmreg[pcmreg$denominazione_regione==reg,]
-dataistat <- read.csv("data/istat/pop_prov_age_3_groups.csv")
+
 
 lista_prov <- c("Torino", "Alessandria", "Asti", "Biella", "Cuneo", "Novara", "Verbano-Cusio-Ossola", "Vercelli")
 res_reg <- as.data.frame(matrix(0, ncol = 13, nrow = days))
@@ -165,8 +174,7 @@ N <- 0
 for (p in lista_prov){
   res <- sirdModel(province=p)
   res_reg <- aggregate(. ~ time, rbind(res_reg, res), sum)
-  data_prov <- dataistat[dataistat$Territorio == p,]
-  N <- N + data_prov$Value[data_prov$Eta == "Total"]
+  N <- N + get_tot_population(p)
 }
 
 # Need to remove first empty row, R is misterious
