@@ -29,7 +29,7 @@ calc_deriv <- function(t, x, vparameters)
 
 # Example
 # Turin
-province <- "Torino"
+province <- "Valle d'Aosta"
 dataistat <- read.csv("data/istat/pop_prov_age_3_groups.csv")
 data_to <- dataistat[dataistat$Territorio == province,]
 pop <- data_to$Value[data_to$Eta == "Total"]
@@ -61,7 +61,7 @@ rho <- 1/6
 
 # We'll need to estimate from the data like 
 # it's done in the app
-R0 <- 3
+R0 <- 1.5
 
 #####
 # Estimate contact matrix C using our logistic regr.
@@ -103,7 +103,7 @@ data(polymod)
 survey_pop <- data_to[1:3, c("Value", "Eta")]
 colnames(survey_pop) <- c("population", "lower.age.limit")
 survey_pop$lower.age.limit <- c(0, 25, 75)
-
+set.seed(1234)
 # Estimate the contact matrix, using also bootstrap n=10
 mat <- contact_matrix(polymod, 
                       countries = "Italy",
@@ -129,28 +129,29 @@ vparameters <- c(gamma = gamma, beta = beta, alpha = alpha, rho = rho, C = C)
 inits = c(S=S_0,I=I_0,R=R_0, D=D_0)
 
 # S,I and R for various t
-vt <- seq(10, 200, 1)  
+vt <- seq(1, 121, 1)
 results <- as.data.frame(lsoda(inits, vt, calc_deriv, vparameters))
 
 # Plots
 par(mfrow<-c(1,1))
+ymax = max(c(results$I1,results$I2, results$I3))
 
 # I
 plot(results$time,
-     results$I1/N[1],
+     results$I1,
      type="l",
      xlab="days",
      ylab="Individuals",
-     ylim=c(0,1),
+     ylim=c(0,ymax),
      lwd=2,
      col=2,
      main="Age-structured SIR (I)")
 lines(results$time,
-      results$I2/N[2],
+      results$I2,
       col=3,
       lwd=2)
 lines(results$time,
-      results$I3/N[3],
+      results$I3,
       col=4,
       lwd=2)
 legend("topright",
