@@ -1,4 +1,6 @@
 source("age-sird.R")
+library(rjson)
+library(plotly)
 
 # Get predictions
 results <- sirdModel()
@@ -99,26 +101,31 @@ legend("topright",
        col=c(2,3,4),
        lwd=2)
 
+# ---------------------------------------------
 
 # Other plots
-contagiati_g1 <- vector("list", nrow(results))
-contagiati_g2 <- vector("list", nrow(results))
-contagiati_g3 <- vector("list", nrow(results))
-contagiati_g1[1] <- 0
-contagiati_g2[1] <- 0
-contagiati_g3[1] <- 0
-
-for (i in 2:nrow(results)){
-  contagiati_g1[i] <- contagiati_g1[[i-1]]+(-(results$S1[i] - results$S1[i-1]))
-  contagiati_g2[i] <- contagiati_g2[[i-1]]+(-(results$S2[i] - results$S2[i-1]))
-  contagiati_g3[i] <- contagiati_g3[[i-1]]+(-(results$S3[i] - results$S3[i-1]))
+get_contagiati_cumul <- function(results){
+  contagiati_g1 <- vector("list", nrow(results))
+  contagiati_g2 <- vector("list", nrow(results))
+  contagiati_g3 <- vector("list", nrow(results))
+  contagiati_g1[1] <- 0
+  contagiati_g2[1] <- 0
+  contagiati_g3[1] <- 0
+  
+  for (i in 2:nrow(results)){
+    contagiati_g1[i] <- contagiati_g1[[i-1]]+(-(results$S1[i] - results$S1[i-1]))
+    contagiati_g2[i] <- contagiati_g2[[i-1]]+(-(results$S2[i] - results$S2[i-1]))
+    contagiati_g3[i] <- contagiati_g3[[i-1]]+(-(results$S3[i] - results$S3[i-1]))
+  }
+  
+  contagiati_g1 <- do.call("rbind",contagiati_g1)
+  contagiati_g2 <- do.call("rbind",contagiati_g2)
+  contagiati_g3 <- do.call("rbind",contagiati_g3)
+  
+  contagiati <- data.frame(contagiati_g1, contagiati_g2, contagiati_g3)
 }
 
-contagiati_g1 <- do.call("rbind",contagiati_g1)
-contagiati_g2 <- do.call("rbind",contagiati_g2)
-contagiati_g3 <- do.call("rbind",contagiati_g3)
-
-contagiati <- data.frame(contagiati_g1, contagiati_g2, contagiati_g3)
+contagiati <- get_contagiati_cumul(results)
 
 prov <- "Torino"
 pcmprov <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-province/dpc-covid19-ita-province.csv")
@@ -140,16 +147,64 @@ mp <- mp %>%
   )
 mp
 
-pcmreg <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv")
+# --------------------------------------------
 
+# Cumulative for region
+reg <- "Piemonte"
+pcmreg <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv")
+pcmreg <- pcmreg[pcmreg$denominazione_regione==reg,]
+
+res_torino <- sirdModel(province="Torino")
+res_alessandria <- sirdModel(province="Alessandria")
+res_asti <- sirdModel(province="Asti")
+res_biella <- sirdModel(province="Biella")
+res_cuneo <- sirdModel(province="Cuneo")
+res_novara <- sirdModel(province="Novara")
+res_vco <- sirdModel(province="Verbano-Cusio-Ossola")
+res_vercelli <- sirdModel(province="Vercelli")
+
+res_piemonte <- aggregate(. ~ time, rbind(res_torino,
+                                          res_alessandria,
+                                          res_asti,
+                                          res_biella,
+                                          res_cuneo,
+                                          res_novara,
+                                          res_vco,
+                                          res_vercelli), sum)
+
+contag_reg <- get_contagiati_cumul(res_piemonte)
+
+lista_prov <- c("Torino", "Alessandria", "Asti", "Biella", "Cuneo", "Novara", "Verbano-Cusio-Ossola", "Vercelli")
+dataistat <- read.csv("data/istat/pop_prov_age_3_groups.csv")
+N <- 0
+for (p in lista_prov){
+  data_prov <- dataistat[dataistat$Territorio == p,]
+  N <- N + data_prov$Value[data_prov$Eta == "Total"]
+}
+
+mreg <- plot_ly(res_piemonte, 
+              x = res_piemonte$time, 
+              y = (contag_reg$contagiati_g1+contag_reg$contagiati_g2+contag_reg$contagiati_g3)/N,
+              type = 'scatter',
+              mode = 'lines+markers',
+              line = list(color = 'rgb(205, 12, 24)', width = 4),
+              name = "Prediction")
+mreg <- mreg %>% add_trace(y = pcmreg$totale_casi/(N), name = 'Real data', mode = 'markers')
+mreg <- mreg %>%
+  layout(
+    title = paste("Cumulative cases",reg),
+    xaxis = list(title = "Days"),
+    yaxis = list (title = "% Individuals")
+  )
+mreg
+
+# --------------------------------------------
 ### Plot alex
 
 I1 <- results$I1
 I2 <- results$I2
 I3 <- results$I3
 
-library(rjson)
-library(plotly)
 data <- ("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-province-latest.json") 
 data1 <- fromJSON(file=data)
 
