@@ -2,6 +2,7 @@ source("age-sird.R")
 library(rjson)
 library(plotly)
 
+# Will need to increment this every day
 days = 122
 
 # Get predictions
