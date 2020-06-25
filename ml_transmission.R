@@ -39,9 +39,9 @@ estimate_contact_matrix <- function(province, groups)
 {
   # Load data from Istat csv
   dataistat <- read.csv("data/istat/pop_prov_age_3_groups.csv")
-  data_to <- dataistat[dataistat$Territorio == province,]
-  pop <- data_to$Value[data_to$Eta == "Total"]
-  class_pop <- data_to$Value[data_to$Eta != "Total"]
+  data_prov <- dataistat[dataistat$Territorio == province,]
+  pop <- data_prov$Value[data_prov$Eta == "Total"]
+  class_pop <- data_prov$Value[data_prov$Eta != "Total"]
   
   # 75-100
   highrisk <- class_pop[3]
@@ -52,44 +52,23 @@ estimate_contact_matrix <- function(province, groups)
   # 0-25
   lowrisk <- class_pop[1]
   
-  # Sample size
-  N <- 1000
+  x <- sample(mediumrisk)
+  d <- sample(highrisk)
+
   p <- get_risk_p(groups)
-  n1 <- N*p
-  n2 <- N-n1
-  
-  x <- sample(eval(parse(text = groups[1])), N)
-  d <- sample(eval(parse(text = groups[2])), N)
   
   idx <- createDataPartition(x, p=p, list=FALSE)
+
   
-  k <- rnorm(d)
+  x1 <- as.vector(x)
+  y2 <- (d[-idx])
+  y <- sample(y2)
   
-  nll <- function(theta0,theta1) {
-    x1 <- as.vector(k)
-    y <- as.vector(x[-idx])
-    mu = exp(theta0 + x1*theta1)
-    -sum(y*(log(mu)) - mu)
-  }
+  lenght = NROW(y)
+  k=sample(x1,lenght)
   
-  x1 <- as.vector(k)
-  y <- as.vector(x[-idx])
+  w <- data.frame(k,y)
+  glm.fit <-  glm((k)~y,data=w,family = poisson)
   
-  # MLE
-  #est <- stats4::mle(minuslog=nll, start=list(theta0=2, theta1=0))
-  
-  y1 <- sample(x1, N-(N*p))
-  w <- data.frame(y, y1)
-  
-  # Fit glm
-  glm.fit <- glm(log(y)~y1, data=w)
-  
-  # Predict glm
-  pred.lm <- predict(glm.fit, w)
-  
-  # Get results
-  j <- mean(pred.lm)
-  percnt <- j/(N-(N*p)) *100
-  
-  return(c(j, percnt))
+  return(glm.fit$coefficients)
 }
