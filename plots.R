@@ -17,46 +17,26 @@ contagiati_g3 <- do.call("rbind",contagiati_g3)
 
 contagiati <- data.frame(contagiati_g1, contagiati_g2, contagiati_g3)
 
+region <- "Valle d'Aosta"
+y <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv")
+y <- y[y$denominazione_regione==region,]
+
 plot(results$time,
-     contagiati$contagiati_g1/N[1],
+     (contagiati$contagiati_g1+contagiati$contagiati_g2+contagiati$contagiati_g3)/(N[1]+N[2]+N[3]),
      type="l",
      xlab="days",
      ylab="Individuals",
-     ylim=c(0,1),
      lwd=2,
      col=2,
      main=paste("Contagiati",province))
 lines(results$time,
-      contagiati$contagiati_g2/N[2],
+      y$totale_casi/(N[1]+N[2]+N[3]),
       col=3,
-      lwd=2)
-lines(results$time,
-      contagiati$contagiati_g3/N[3],
-      col=4,
       lwd=2)
 legend("topright",
-       legend=c("0-25","25-75", ">75"),
-       col=c(2,3,4),
+       legend=c("Previsione","Reale"),
+       col=c(2,3),
        lwd=2)
-
-region <- "Valle d'Aosta"
-y <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv")
-y <- y[y$denominazione_regione==region,]
-plot(seq(1,nrow(y)),
-     y$totale_casi,
-     type="l",
-     xlab="days",
-     ylab="Individuals",
-     lwd=2,
-     col=2,
-     main=paste("Contagiati",region))
-
-
-lines(seq(1,nrow(y)),
-      y$totale_positivi,
-      col=3,
-      lwd=2)
-
 
 
 ### Plot alex
