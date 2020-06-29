@@ -2,7 +2,7 @@ library(deSolve)
 library("socialmixr")
 source("ml_transmission.R")
 
-sirdModel <- function(province="Torino", D=7, alpha=0.05, rho=1/6, R0=3, days=122, estMethod="Polymod")
+sirdModel <- function(province="Torino", D=7, alpha=0.05, rho=1/6, R0=3, days=127, estMethod="Polymod")
 {
   # The SIRD model.
   # x is a vector of length (#model compartment types)*(#age classes)
