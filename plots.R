@@ -3,31 +3,40 @@ library(rjson)
 library(plotly)
 
 # Will need to increment this every day
-days = 122
+days = 127
 
 # Get predictions
-results <- sirdModel(province="Torino", days=days)
+province <- "Torino"
+results <- sirdModel(province=province, days=days)
+
+dataistat <- read.csv("data/istat/pop_prov_age_3_groups.csv")
+data_prov <- dataistat[dataistat$Territorio == province,]
+pop <- data_prov$Value[data_prov$Eta == "Total"]
+class_percent <- data_prov$Percentage[data_prov$Eta != "Total"]
+
+# number in each age class
+N <- pop*class_percent
 
 ### SIRD plots
 par(mfrow<-c(1,1))
-ymax = max(c(results$I1,results$I2, results$I3))
+ymax = max(c(results$I1/N[1],results$I2/N[2], results$I3/N[3]))
 
 # I
 plot(results$time,
-     results$I1,
+     results$I1/N[1],
      type="l",
      xlab="days",
-     ylab="Individuals",
+     ylab="% Individuals",
      ylim=c(0,ymax),
      lwd=2,
      col=2,
      main="Age-structured SIR (I)")
 lines(results$time,
-      results$I2,
+      results$I2/N[2],
       col=3,
       lwd=2)
 lines(results$time,
-      results$I3,
+      results$I3/N[3],
       col=4,
       lwd=2)
 legend("topright",
@@ -87,7 +96,7 @@ plot(results$time,
      type="l",
      xlab="days",
      ylab="Individuals",
-     ylim=c(0,1),
+     ylim=c(0,ymax),
      lwd=2,
      col=2,
      main="Age-structured SIR (D)")
