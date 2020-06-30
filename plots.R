@@ -348,7 +348,7 @@ m
 
 
 l <- plot_ly(results, x = ~results$R1, y = ~results$S1, z = ~results$I1,
-             marker = list(color = ~mpg, colorscale = c('#FFE1A1', '#683531'), showscale = TRUE))
+             marker = list(color = ~mpg, colorscale = c('#FFE1A1', '#683531'), showscale = FALSE))
 l <- l %>% add_markers()
 l <- l %>% layout(scene = list(xaxis = list(title = 'High Risk Recovery'),
                                yaxis = list(title = 'High Risk Suspectible'),
