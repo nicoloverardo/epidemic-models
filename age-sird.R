@@ -2,7 +2,7 @@ library(deSolve)
 library("socialmixr")
 source("ml_transmission.R")
 
-sirdModel <- function(province="Torino", D=7, alpha=0.05, rho=1/6, R0=3, days=127, estMethod="Polymod")
+sirdModel <- function(province="Torino", D=7, alpha=0.01, rho=1/6, R0=3, days=127, estMethod="Polymod")
 {
   # The SIRD model.
   # x is a vector of length (#model compartment types)*(#age classes)
@@ -131,7 +131,7 @@ sirdModel <- function(province="Torino", D=7, alpha=0.05, rho=1/6, R0=3, days=12
   # Get beta from R0 and gamma
   eig <- eigen(M)
   beta <- R0*gamma/max(Re(eig$values))  
-  beta <- beta
+  #beta <- beta
   
   # Solve the model
   vparameters <- c(gamma = gamma, beta = beta, alpha = alpha, rho = rho, C = C)
@@ -139,7 +139,7 @@ sirdModel <- function(province="Torino", D=7, alpha=0.05, rho=1/6, R0=3, days=12
   
   # S,I and R for various t
   vt <- seq(1, days, 1)
-  results <- as.data.frame(lsoda(inits, vt, calc_deriv, vparameters))
+  results <- as.data.frame(ode(y=inits, times=vt, func=calc_deriv, parms=vparameters))
   
   return(results)
 }
