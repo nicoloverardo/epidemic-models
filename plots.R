@@ -294,6 +294,23 @@ infplot <- infplot %>%
   )
 infplot
 
+
+dtplot <- plot_ly(results, 
+                   x = results$time, 
+                   y = results$D1+results$D2+results$D3,
+                   type = 'scatter',
+                   mode = 'lines+markers',
+                   line = list(color = 'rgb(205, 12, 24)', width = 4),
+                   name = "Prediction")
+dtplot <- dtplot %>% add_trace(y = pcmreg$deceduti, name = 'Real data', mode = 'markers')
+dtplot <- dtplot %>%
+  layout(
+    title = paste("Cumulative deaths",reg),
+    xaxis = list(title = "Days"),
+    yaxis = list (title = "Individuals")
+  )
+dtplot
+
 # --------------------------------------------
 ### Plot alex
 
