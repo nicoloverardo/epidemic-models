@@ -148,7 +148,7 @@ sirdModel <- function(province="Torino", D=7, alpha=0.01, rho=1/6, R0=3, days=12
 # -----------------------------
 # TIME DEPENDENT BETA
 
-sirdModel <- function(province="Torino", D=7, alpha=0.01, rho=1/6, days=127, estMethod="Polymod")
+sirdModelTD <- function(province="Torino", D=7, alpha=0.01, rho=1/6, days=127, estMethod="Polymod")
 {
   # The SIRD model.
   # x is a vector of length (#model compartment types)*(#age classes)
