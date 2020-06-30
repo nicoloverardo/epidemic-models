@@ -21,7 +21,7 @@ days <- nrow(pcmprov)
 
 # Get predictions
 results <- sirdModel(province=prov, days=days)
-
+#results <- sirdModelTD(province=prov, days=days)
 
 ### SIRD plots
 par(mfrow<-c(1,1))
