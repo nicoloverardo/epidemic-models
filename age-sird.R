@@ -66,7 +66,6 @@ sirdModel <- function(province="Torino", D=7, alpha=0.05, rho=1/6, R0=3, days=12
   D_0 <- rep(0, n_age)
   
   
-  
   if (estMethod == "Polymod")
   {
     # Trying to estimate the contact matrix using socialmixr: 
