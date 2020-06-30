@@ -1,5 +1,4 @@
 source("age-sird.R")
-library(rjson)
 library(plotly)
 
 # Will need to increment this every day
@@ -22,96 +21,171 @@ par(mfrow<-c(1,1))
 ymax = max(c(results$I1/N[1],results$I2/N[2], results$I3/N[3]))
 
 # I
-plot(results$time,
-     results$I1/N[1],
-     type="l",
-     xlab="days",
-     ylab="% Individuals",
-     ylim=c(0,ymax),
-     lwd=2,
-     col=2,
-     main="Age-structured SIR (I)")
-lines(results$time,
-      results$I2/N[2],
-      col=3,
-      lwd=2)
-lines(results$time,
-      results$I3/N[3],
-      col=4,
-      lwd=2)
-legend("topright",
-       legend=c("0-25","25-75", ">75"),
-       col=c(2,3,4),
-       lwd=2)
-
-# S
-plot(results$time,
-     results$S1/N[1],
-     type="l",
-     xlab="days",
-     ylab="% Individuals",
-     ylim=c(0,1),
-     lwd=2,
-     col=2,
-     main="Age-structured SIR (S)")
-lines(results$time,
-      results$S2/N[2],
-      col=3,
-      lwd=2)
-lines(results$time,
-      results$S3/N[3],
-      col=4,
-      lwd=2)
-legend("topright",
-       legend=c("0-25","25-75", ">75"),
-       col=c(2,3,4),
-       lwd=2)
-
-# R
-plot(results$time,
-     results$R1/N[1],
-     type="l",
-     xlab="days",
-     ylab="% Individuals",
-     ylim=c(0,1),
-     lwd=2,
-     col=2,
-     main="Age-structured SIR (R)")
-lines(results$time,
-      results$R2/N[2],
-      col=3,
-      lwd=2)
-lines(results$time,
-      results$R3/N[3],
-      col=4,
-      lwd=2)
-legend("topright",
-       legend=c("0-25","25-75", ">75"),
-       col=c(2,3,4),
-       lwd=2)
+I <- plot_ly(results, 
+              x = results$time, 
+              y = results$I1/N[1],
+              type = 'scatter',
+              mode = 'lines',
+              line = list(color = 'rgb(205, 12, 24)', width = 4),
+              name = "0-25")
+I <- I %>% add_trace(y = results$I2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
+I <- I %>% add_trace(y = results$I3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
+I <- I %>%
+  layout(
+    title = paste("Age-structured SIRD",province,"- Infected"),
+    xaxis = list(title = "Days"),
+    yaxis = list (title = "% Individuals")
+  )
+I
 
 # D
-plot(results$time,
-     results$D1/N[1],
-     type="l",
-     xlab="days",
-     ylab="% Individuals",
-     ylim=c(0,ymax),
-     lwd=2,
-     col=2,
-     main="Age-structured SIR (D)")
-lines(results$time,
-      results$D2/N[2],
-      col=3,
-      lwd=2)
-lines(results$time,
-      results$D3/N[3],
-      col=4,
-      lwd=2)
-legend("topright",
-       legend=c("0-25","25-75", ">75"),
-       col=c(2,3,4),
-       lwd=2)
+D <- plot_ly(results, 
+             x = results$time, 
+             y = results$D1/N[1],
+             type = 'scatter',
+             mode = 'lines',
+             line = list(color = 'rgb(205, 12, 24)', width = 4),
+             name = "0-25")
+D <- D %>% add_trace(y = results$D2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
+D <- D %>% add_trace(y = results$D3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
+D <- D %>%
+  layout(
+    title = paste("Age-structured SIRD",province,"- Deaths"),
+    xaxis = list(title = "Days"),
+    yaxis = list (title = "% Individuals")
+  )
+D
+
+# S
+S <- plot_ly(results, 
+             x = results$time, 
+             y = results$S1/N[1],
+             type = 'scatter',
+             mode = 'lines',
+             line = list(color = 'rgb(205, 12, 24)', width = 4),
+             name = "0-25")
+S <- S %>% add_trace(y = results$S2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
+S <- S %>% add_trace(y = results$S3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
+S <- S %>%
+  layout(
+    title = paste("Age-structured SIRD",province,"- Susceptible"),
+    xaxis = list(title = "Days"),
+    yaxis = list (title = "% Individuals")
+  )
+S
+
+# R
+R <- plot_ly(results, 
+             x = results$time, 
+             y = results$R1/N[1],
+             type = 'scatter',
+             mode = 'lines',
+             line = list(color = 'rgb(205, 12, 24)', width = 4),
+             name = "0-25")
+R <- R %>% add_trace(y = results$R2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
+R <- R %>% add_trace(y = results$R3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
+R <- R %>%
+  layout(
+    title = paste("Age-structured SIRD",province,"- Recovered"),
+    xaxis = list(title = "Days"),
+    yaxis = list (title = "% Individuals")
+  )
+R
+
+###### OLD PLOTS
+# 
+# # I
+# plot(results$time,
+#      results$I1/N[1],
+#      type="l",
+#      xlab="days",
+#      ylab="% Individuals",
+#      ylim=c(0,ymax),
+#      lwd=2,
+#      col=2,
+#      main="Age-structured SIR (I)")
+# lines(results$time,
+#       results$I2/N[2],
+#       col=3,
+#       lwd=2)
+# lines(results$time,
+#       results$I3/N[3],
+#       col=4,
+#       lwd=2)
+# legend("topright",
+#        legend=c("0-25","25-75", ">75"),
+#        col=c(2,3,4),
+#        lwd=2)
+# 
+# # S
+# plot(results$time,
+#      results$S1/N[1],
+#      type="l",
+#      xlab="days",
+#      ylab="% Individuals",
+#      ylim=c(0,1),
+#      lwd=2,
+#      col=2,
+#      main="Age-structured SIR (S)")
+# lines(results$time,
+#       results$S2/N[2],
+#       col=3,
+#       lwd=2)
+# lines(results$time,
+#       results$S3/N[3],
+#       col=4,
+#       lwd=2)
+# legend("topright",
+#        legend=c("0-25","25-75", ">75"),
+#        col=c(2,3,4),
+#        lwd=2)
+# 
+# # R
+# plot(results$time,
+#      results$R1/N[1],
+#      type="l",
+#      xlab="days",
+#      ylab="% Individuals",
+#      ylim=c(0,1),
+#      lwd=2,
+#      col=2,
+#      main="Age-structured SIR (R)")
+# lines(results$time,
+#       results$R2/N[2],
+#       col=3,
+#       lwd=2)
+# lines(results$time,
+#       results$R3/N[3],
+#       col=4,
+#       lwd=2)
+# legend("topright",
+#        legend=c("0-25","25-75", ">75"),
+#        col=c(2,3,4),
+#        lwd=2)
+# 
+# # D
+# plot(results$time,
+#      results$D1/N[1],
+#      type="l",
+#      xlab="days",
+#      ylab="% Individuals",
+#      ylim=c(0,ymax),
+#      lwd=2,
+#      col=2,
+#      main="Age-structured SIR (D)")
+# lines(results$time,
+#       results$D2/N[2],
+#       col=3,
+#       lwd=2)
+# lines(results$time,
+#       results$D3/N[3],
+#       col=4,
+#       lwd=2)
+# legend("topright",
+#        legend=c("0-25","25-75", ">75"),
+#        col=c(2,3,4),
+#        lwd=2)
+#############
 
 # ---------------------------------------------
 
@@ -142,7 +216,6 @@ get_tot_population <- function(province){
   return(data_prov$Value[data_prov$Eta == "Total"])
 }
 
-dataistat <- read.csv("data/istat/pop_prov_age_3_groups.csv")
 results <- sirdModel(province="Torino", days=days)
 contagiati <- get_contagiati_cumul(results)
 
@@ -239,19 +312,19 @@ p <-
     x = results$time,
     y =  I1+I2+I3,
     type = 'scatter',
-    mode = 'lines+markers',
-    line = list(color = 'rgb(205, 12, 24)', width = 4)
+    mode = 'lines',
+    line = list(color = 'rgb(205, 12, 24)', width = 4),
+    name = "Total"
   )
-p <- p %>% add_trace(y =I1 , name = 'MEDIUM PREDICTION',mode = 'markers')
-p <- p %>% add_trace(y =I2 , name = 'HIGH RISK PREDICTION',mode = 'markers')
-p <- p %>% add_trace(y =I3 , name = 'LOW RISK PREDICTION',mode = 'markers')
-p <- p %>% add_trace(y =I3 , name = 'LOW RISK PREDICTION',mode = 'markers')
+p <- p %>% add_trace(y =I1 , name = 'Medium Risk', mode = 'lines', line = list(color="orange"))
+p <- p %>% add_trace(y =I2 , name = 'High Risk', mode = 'lines', line = list(color="green"))
+p <- p %>% add_trace(y =I3 , name = 'Low Risk', mode = 'lines', line = list(color="purple"))
 
 
 p <- p %>%
   layout(
-    title = "Total Cases",
-    xaxis = list(title = "Time"),
+    title = paste("Total Cases -",prov),
+    xaxis = list(title = "Days"),
     yaxis = list (title = "Individuals")
   )
 p
@@ -259,14 +332,14 @@ p
 
 xq <- c('High Risk', 'Medium Risk', 'Low Risk')
 yq <- c(sum(results$D1), sum(results$D2), sum(results$D3))
-text <- c('60 years and above', '30-60 years', '0-30')
+text <- c('>75', '25-75', '0-25')
 data11 <- data.frame(xq, yq, text)
 
 m <- plot_ly(data11, x = ~xq, y = ~yq, type = 'bar', text = text,
              marker = list(color = 'rgb(158,202,225)',
                            line = list(color = 'rgb(8,48,107)',
                                        width = 1.5)))
-m <- m %>% layout(title = "PREDICTED DEATH IN DIFFERENT AGE GROUPS",
+m <- m %>% layout(title = paste("Predicted deaths -",prov),
                   xaxis = list(title = ""),
                   yaxis = list(title = ""))
 
@@ -283,7 +356,7 @@ l <- l %>% layout(scene = list(xaxis = list(title = 'High Risk Recovery'),
                   annotations = list(
                     x = 1.13,
                     y = 1.05,
-                    text = 'Comparison High RISK SIR',
+                    text = 'Comparison High RISK SIRD',
                     xref = 'Comparison',
                     yref = 'Comparison',
                     showarrow = FALSE
