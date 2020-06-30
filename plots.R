@@ -1,20 +1,27 @@
 source("age-sird.R")
 library(plotly)
 
-# Will need to increment this every day
-days = 127
+# Get data and setup
+prov <- "Torino"
+reg <- "Piemonte"
+lista_prov <- c("Torino", "Alessandria", "Asti", "Biella", "Cuneo", "Novara", "Verbano-Cusio-Ossola", "Vercelli")
 
-# Get predictions
-province <- "Torino"
-results <- sirdModel(province=province, days=days)
-
+pcmprov <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-province/dpc-covid19-ita-province.csv")
+pcmprov <- pcmprov[pcmprov$denominazione_provincia==prov,]
+pcmreg <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv")
+pcmreg <- pcmreg[pcmreg$denominazione_regione==reg,]
 dataistat <- read.csv("data/istat/pop_prov_age_3_groups.csv")
-data_prov <- dataistat[dataistat$Territorio == province,]
+data_prov <- dataistat[dataistat$Territorio == prov,]
 pop <- data_prov$Value[data_prov$Eta == "Total"]
 class_percent <- data_prov$Percentage[data_prov$Eta != "Total"]
-
-# number in each age class
 N <- pop*class_percent
+
+# Number of days to predict
+days <- nrow(pcmprov)
+
+# Get predictions
+results <- sirdModel(province=prov, days=days)
+
 
 ### SIRD plots
 par(mfrow<-c(1,1))
@@ -32,7 +39,7 @@ I <- I %>% add_trace(y = results$I2/N[2], name = '25-75', mode = 'lines', line =
 I <- I %>% add_trace(y = results$I3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
 I <- I %>%
   layout(
-    title = paste("Age-structured SIRD",province,"- Infected"),
+    title = paste("Age-structured SIRD",prov,"- Infected"),
     xaxis = list(title = "Days"),
     yaxis = list (title = "% Individuals")
   )
@@ -50,7 +57,7 @@ D <- D %>% add_trace(y = results$D2/N[2], name = '25-75', mode = 'lines', line =
 D <- D %>% add_trace(y = results$D3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
 D <- D %>%
   layout(
-    title = paste("Age-structured SIRD",province,"- Deaths"),
+    title = paste("Age-structured SIRD",prov,"- Deaths"),
     xaxis = list(title = "Days"),
     yaxis = list (title = "% Individuals")
   )
@@ -68,7 +75,7 @@ S <- S %>% add_trace(y = results$S2/N[2], name = '25-75', mode = 'lines', line =
 S <- S %>% add_trace(y = results$S3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
 S <- S %>%
   layout(
-    title = paste("Age-structured SIRD",province,"- Susceptible"),
+    title = paste("Age-structured SIRD",prov,"- Susceptible"),
     xaxis = list(title = "Days"),
     yaxis = list (title = "% Individuals")
   )
@@ -86,7 +93,7 @@ R <- R %>% add_trace(y = results$R2/N[2], name = '25-75', mode = 'lines', line =
 R <- R %>% add_trace(y = results$R3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
 R <- R %>%
   layout(
-    title = paste("Age-structured SIRD",province,"- Recovered"),
+    title = paste("Age-structured SIRD",prov,"- Recovered"),
     xaxis = list(title = "Days"),
     yaxis = list (title = "% Individuals")
   )
@@ -216,12 +223,8 @@ get_tot_population <- function(province){
   return(data_prov$Value[data_prov$Eta == "Total"])
 }
 
-results <- sirdModel(province="Torino", days=days)
+results <- sirdModel(province=prov, days=days)
 contagiati <- get_contagiati_cumul(results)
-
-prov <- "Torino"
-pcmprov <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-province/dpc-covid19-ita-province.csv")
-pcmprov <- pcmprov[pcmprov$denominazione_provincia==prov,]
 
 N <- get_tot_population(prov)
 
@@ -244,11 +247,6 @@ mp
 # --------------------------------------------
 
 # Cumulative for region
-reg <- "Piemonte"
-pcmreg <- read.csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv")
-pcmreg <- pcmreg[pcmreg$denominazione_regione==reg,]
-
-lista_prov <- c("Torino", "Alessandria", "Asti", "Biella", "Cuneo", "Novara", "Verbano-Cusio-Ossola", "Vercelli")
 res_reg <- as.data.frame(matrix(0, ncol = 13, nrow = days))
 colnames(res_reg) <- c("time","S1","S2","S3","I1","I2","I3","R1","R2","R3","D1","D2","D3")
 
@@ -292,7 +290,7 @@ infplot <- infplot %>%
   layout(
     title = paste("Cumulative positive (infected)",reg),
     xaxis = list(title = "Days"),
-    yaxis = list (title = "% Individuals")
+    yaxis = list (title = "Individuals")
   )
 infplot
 
