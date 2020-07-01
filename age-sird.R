@@ -5,8 +5,6 @@ source("ml_transmission.R")
 sirdModel <- function(province="Torino", D=7, alpha=0.01, rho=1/6, R0=3, days=127, estMethod="Polymod")
 {
   # The SIRD model.
-  # x is a vector of length (#model compartment types)*(#age classes)
-  # vparameters are gamma, beta and the contact matrix C
   calc_deriv <- function(t, x, vparameters)
   {
     n_compartment <- 4
@@ -151,8 +149,6 @@ sirdModel <- function(province="Torino", D=7, alpha=0.01, rho=1/6, R0=3, days=12
 sirdModelTD <- function(province="Torino", D=7, alpha=0.01, rho=1/6, days=127, estMethod="Polymod")
 {
   # The SIRD model.
-  # x is a vector of length (#model compartment types)*(#age classes)
-  # vparameters are gamma, beta and the contact matrix C
   calc_deriv <- function(t, x, vparameters)
   {
     n_compartment <- 4
@@ -275,8 +271,8 @@ sirdModelTD <- function(province="Torino", D=7, alpha=0.01, rho=1/6, days=127, e
   
   R_0_start = 5
   k = 0.1
-  x0 = 50
-  R_0_end = 0.5
+  x0 = 20
+  R_0_end = 0.8
   
   # Logistic R0
   calc_R_0 <- function(t) {
@@ -287,7 +283,6 @@ sirdModelTD <- function(province="Torino", D=7, alpha=0.01, rho=1/6, days=127, e
   beta_fun <- function(t){
     return(calc_R_0(t)*gamma/max(Re(eig$values)))
   }
-  
   
   # Get beta from R0 and gamma
   eig <- eigen(M)
