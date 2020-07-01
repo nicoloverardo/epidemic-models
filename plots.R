@@ -313,6 +313,7 @@ dtplot
 
 #--------------------------------------------- 
 # PLOTS FOR TIME DEPENDENT BETA
+
 # Get data and setup
 prov <- "Torino"
 reg <- "Piemonte"
@@ -332,23 +333,23 @@ N <- pop*class_percent
 days <- nrow(pcmprov)
 
 # Get predictions
-results <- sirdModelTD(province=prov, days=days)
+resultsTD <- sirdModelTD(province=prov, days=days)
 
 
 ### SIRD plots
 par(mfrow<-c(1,1))
-ymax = max(c(results$I1/N[1],results$I2/N[2], results$I3/N[3]))
+ymax = max(c(resultsTD$I1/N[1],resultsTD$I2/N[2], resultsTD$I3/N[3]))
 
 # I
-I <- plot_ly(results, 
-             x = results$time, 
-             y = results$I1/N[1],
+I <- plot_ly(resultsTD, 
+             x = resultsTD$time, 
+             y = resultsTD$I1/N[1],
              type = 'scatter',
              mode = 'lines',
              line = list(color = 'rgb(205, 12, 24)', width = 4),
              name = "0-25")
-I <- I %>% add_trace(y = results$I2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
-I <- I %>% add_trace(y = results$I3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
+I <- I %>% add_trace(y = resultsTD$I2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
+I <- I %>% add_trace(y = resultsTD$I3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
 I <- I %>%
   layout(
     title = paste("Age-structured SIRD",prov,"- Infected"),
@@ -358,15 +359,15 @@ I <- I %>%
 I
 
 # D
-D <- plot_ly(results, 
-             x = results$time, 
-             y = results$D1/N[1],
+D <- plot_ly(resultsTD, 
+             x = resultsTD$time, 
+             y = resultsTD$D1/N[1],
              type = 'scatter',
              mode = 'lines',
              line = list(color = 'rgb(205, 12, 24)', width = 4),
              name = "0-25")
-D <- D %>% add_trace(y = results$D2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
-D <- D %>% add_trace(y = results$D3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
+D <- D %>% add_trace(y = resultsTD$D2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
+D <- D %>% add_trace(y = resultsTD$D3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
 D <- D %>%
   layout(
     title = paste("Age-structured SIRD",prov,"- Deaths"),
@@ -376,15 +377,15 @@ D <- D %>%
 D
 
 # S
-S <- plot_ly(results, 
-             x = results$time, 
-             y = results$S1/N[1],
+S <- plot_ly(resultsTD, 
+             x = resultsTD$time, 
+             y = resultsTD$S1/N[1],
              type = 'scatter',
              mode = 'lines',
              line = list(color = 'rgb(205, 12, 24)', width = 4),
              name = "0-25")
-S <- S %>% add_trace(y = results$S2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
-S <- S %>% add_trace(y = results$S3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
+S <- S %>% add_trace(y = resultsTD$S2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
+S <- S %>% add_trace(y = resultsTD$S3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
 S <- S %>%
   layout(
     title = paste("Age-structured SIRD",prov,"- Susceptible"),
@@ -394,15 +395,15 @@ S <- S %>%
 S
 
 # R
-R <- plot_ly(results, 
-             x = results$time, 
-             y = results$R1/N[1],
+R <- plot_ly(resultsTD, 
+             x = resultsTD$time, 
+             y = resultsTD$R1/N[1],
              type = 'scatter',
              mode = 'lines',
              line = list(color = 'rgb(205, 12, 24)', width = 4),
              name = "0-25")
-R <- R %>% add_trace(y = results$R2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
-R <- R %>% add_trace(y = results$R3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
+R <- R %>% add_trace(y = resultsTD$R2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
+R <- R %>% add_trace(y = resultsTD$R3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
 R <- R %>%
   layout(
     title = paste("Age-structured SIRD",prov,"- Recovered"),
@@ -440,13 +441,13 @@ get_tot_population <- function(province){
   return(data_prov$Value[data_prov$Eta == "Total"])
 }
 
-results <- sirdModelTD(province=prov, days=days)
-contagiati <- get_contagiati_cumul(results)
+resultsTD <- sirdModelTD(province=prov, days=days)
+contagiati <- get_contagiati_cumul(resultsTD)
 
 N <- get_tot_population(prov)
 
-mp <- plot_ly(results, 
-              x = results$time, 
+mp <- plot_ly(resultsTD, 
+              x = resultsTD$time, 
               y = (contagiati$contagiati_g1+contagiati$contagiati_g2+contagiati$contagiati_g3)/N,
               type = 'scatter',
               mode = 'lines+markers',
@@ -495,9 +496,9 @@ mreg <- mreg %>%
   )
 mreg
 
-infplot <- plot_ly(results, 
-                   x = results$time, 
-                   y = results$I1+results$I2+results$I3,
+infplot <- plot_ly(resultsTD, 
+                   x = resultsTD$time, 
+                   y = resultsTD$I1+resultsTD$I2+resultsTD$I3,
                    type = 'scatter',
                    mode = 'lines+markers',
                    line = list(color = 'rgb(205, 12, 24)', width = 4),
@@ -512,9 +513,9 @@ infplot <- infplot %>%
 infplot
 
 
-dtplot <- plot_ly(results, 
-                  x = results$time, 
-                  y = results$D1+results$D2+results$D3,
+dtplot <- plot_ly(resultsTD, 
+                  x = resultsTD$time, 
+                  y = resultsTD$D1+resultsTD$D2+resultsTD$D3,
                   type = 'scatter',
                   mode = 'lines+markers',
                   line = list(color = 'rgb(205, 12, 24)', width = 4),
@@ -527,6 +528,11 @@ dtplot <- dtplot %>%
     yaxis = list (title = "Individuals")
   )
 dtplot
+
+
+# --------------------------------------------
+# PLOTS COMPARISON: FIXED, TIME-DEP, REAL DATA
+
 
 # --------------------------------------------
 ### Plot alex
