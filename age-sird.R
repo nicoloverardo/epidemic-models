@@ -146,7 +146,10 @@ sirdModel <- function(province="Torino", D=7, alpha=0.01, rho=1/6, R0=3, days=12
 # -----------------------------
 # TIME DEPENDENT BETA
 
-sirdModelTD <- function(province="Torino", D=7, alpha=0.01, rho=1/6, days=127, estMethod="Polymod")
+sirdModelTD <- function(province="Torino", D=7, alpha=0.01,
+                        rho=1/6, days=127, estMethod="Polymod",
+                        R_0_start = 5, k = 0.1, x0 = 20,
+                        R_0_end = 0.8)
 {
   # The SIRD model.
   calc_deriv <- function(t, x, vparameters)
@@ -268,11 +271,6 @@ sirdModelTD <- function(province="Torino", D=7, alpha=0.01, rho=1/6, days=127, e
   {
     stop("Estimation method not known. Please choose Polymod or GLM.")
   }
-  
-  R_0_start = 5
-  k = 0.1
-  x0 = 20
-  R_0_end = 0.8
   
   # Logistic R0
   calc_R_0 <- function(t) {
