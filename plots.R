@@ -465,24 +465,24 @@ mp
 # --------------------------------------------
 
 # Cumulative for region
-res_reg <- as.data.frame(matrix(0, ncol = 13, nrow = days))
-colnames(res_reg) <- c("time","S1","S2","S3","I1","I2","I3","R1","R2","R3","D1","D2","D3")
+res_reg_td <- as.data.frame(matrix(0, ncol = 13, nrow = days))
+colnames(res_reg_td) <- c("time","S1","S2","S3","I1","I2","I3","R1","R2","R3","D1","D2","D3")
 
 N <- 0
 for (p in lista_prov){
-  res <- sirdModelTD(province=p, days=days)
-  res_reg <- aggregate(. ~ time, rbind(res_reg, res), sum)
+  res_td <- sirdModelTD(province=p, days=days)
+  res_reg_td <- aggregate(. ~ time, rbind(res_reg_td, res_td), sum)
   N <- N + get_tot_population(p)
 }
 
 # Need to remove first empty row, R is misterious
-res_reg <- res_reg[-c(1),]
+res_reg_td <- res_reg_td[-c(1),]
 
-contag_reg <- get_contagiati_cumul(res_reg)
+contag_reg_td <- get_contagiati_cumul(res_reg_td)
 
-mreg <- plot_ly(res_reg, 
-                x = res_reg$time, 
-                y = (contag_reg$contagiati_g1+contag_reg$contagiati_g2+contag_reg$contagiati_g3)/N,
+mreg <- plot_ly(res_reg_td, 
+                x = res_reg_td$time, 
+                y = (contag_reg_td$contagiati_g1+contag_reg_td$contagiati_g2+contag_reg_td$contagiati_g3)/N,
                 type = 'scatter',
                 mode = 'lines+markers',
                 line = list(color = 'rgb(205, 12, 24)', width = 4),
@@ -532,6 +532,57 @@ dtplot
 
 # --------------------------------------------
 # PLOTS COMPARISON: FIXED, TIME-DEP, REAL DATA
+mreg <- plot_ly(res_reg_td, 
+                x = res_reg_td$time, 
+                y = (contag_reg_td$contagiati_g1+contag_reg_td$contagiati_g2+contag_reg_td$contagiati_g3)/N,
+                type = 'scatter',
+                mode = 'lines+markers',
+                line = list(color = 'rgb(205, 12, 24)', width = 4),
+                name = "Prediction with time dep. beta")
+mreg <- mreg %>% add_trace(y = (contag_reg$contagiati_g1+contag_reg$contagiati_g2+contag_reg$contagiati_g3)/N,
+                           name = 'Prediction', mode = 'markers')
+mreg <- mreg %>% add_trace(y = pcmreg$totale_casi/(N), name = 'Real data', mode = 'markers')
+mreg <- mreg %>%
+  layout(
+    title = paste("Cumulative cases",reg),
+    xaxis = list(title = "Days"),
+    yaxis = list (title = "% Individuals")
+  )
+mreg
+
+infplot <- plot_ly(resultsTD, 
+                   x = resultsTD$time, 
+                   y = resultsTD$I1+resultsTD$I2+resultsTD$I3,
+                   type = 'scatter',
+                   mode = 'lines+markers',
+                   line = list(color = 'rgb(205, 12, 24)', width = 4),
+                   name = "Prediction with time dep. beta")
+infplot <- infplot %>% add_trace(y = results$I1+results$I2+results$I3, name = 'Prediction', mode = 'markers')
+infplot <- infplot %>% add_trace(y = pcmreg$totale_positivi, name = 'Real data', mode = 'markers')
+infplot <- infplot %>%
+  layout(
+    title = paste("Cumulative positive (infected)",reg),
+    xaxis = list(title = "Days"),
+    yaxis = list (title = "Individuals")
+  )
+infplot
+
+dtplot <- plot_ly(resultsTD, 
+                  x = resultsTD$time, 
+                  y = resultsTD$D1+resultsTD$D2+resultsTD$D3,
+                  type = 'scatter',
+                  mode = 'lines+markers',
+                  line = list(color = 'rgb(205, 12, 24)', width = 4),
+                  name = "Prediction with time dep. beta")
+dtplot <- dtplot %>% add_trace(y = results$D1+results$D2+results$D3, name = 'Prediction', mode = 'markers')
+dtplot <- dtplot %>% add_trace(y = pcmreg$deceduti, name = 'Real data', mode = 'markers')
+dtplot <- dtplot %>%
+  layout(
+    title = paste("Cumulative deaths",reg),
+    xaxis = list(title = "Days"),
+    yaxis = list (title = "Individuals")
+  )
+dtplot
 
 
 # --------------------------------------------
