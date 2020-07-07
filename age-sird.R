@@ -352,8 +352,9 @@ sirdModelTDweigthed <- function(province="Torino", D=7, alpha=0.01,
   # x0 = 20
   # R_0_end = 0.8
   # 
-  # # Recovery period
-  # gamma <- 1/D
+  
+  # Recovery period
+  gamma <- 1/D
   
   dataistat <- read.csv("data/istat/pop_prov_age_3_groups.csv")
   data_prov <- dataistat[dataistat$Territorio == province,]
