@@ -17,7 +17,15 @@ class_percent <- data_prov$Percentage[data_prov$Eta != "Total"]
 N <- pop*class_percent
 
 # Number of days to predict
-days <- nrow(pcmprov)
+#days <- nrow(pcmprov)
+
+# Download data from our official github repository
+dataProvinces <- read.csv("https://raw.githubusercontent.com/CEEDS-DEMM/COVID-Pro-Dataset/master/deathsItaProv.csv")
+dataProvinces <- dataProvinces[dataProvinces$Province == prov,]
+# Number of days to predict
+days <- nrow(dataProvinces)
+pcmprov <- pcmprov[1:days,]
+pcmreg <- pcmreg[1:days,]
 
 # Get predictions
 results <- sirdModel(province=prov, days=days)
@@ -28,12 +36,12 @@ ymax = max(c(results$I1/N[1],results$I2/N[2], results$I3/N[3]))
 
 # I
 I <- plot_ly(results, 
-              x = results$time, 
-              y = results$I1/N[1],
-              type = 'scatter',
-              mode = 'lines',
-              line = list(color = 'rgb(205, 12, 24)', width = 4),
-              name = "0-25")
+             x = results$time, 
+             y = results$I1/N[1],
+             type = 'scatter',
+             mode = 'lines',
+             line = list(color = 'rgb(205, 12, 24)', width = 4),
+             name = "0-25")
 I <- I %>% add_trace(y = results$I2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
 I <- I %>% add_trace(y = results$I3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
 I <- I %>%
@@ -262,12 +270,12 @@ res_reg <- res_reg[-c(1),]
 contag_reg <- get_contagiati_cumul(res_reg)
 
 mreg <- plot_ly(res_reg, 
-              x = res_reg$time, 
-              y = (contag_reg$contagiati_g1+contag_reg$contagiati_g2+contag_reg$contagiati_g3)/N,
-              type = 'scatter',
-              mode = 'lines+markers',
-              line = list(color = 'rgb(205, 12, 24)', width = 4),
-              name = "Prediction")
+                x = res_reg$time, 
+                y = (contag_reg$contagiati_g1+contag_reg$contagiati_g2+contag_reg$contagiati_g3)/N,
+                type = 'scatter',
+                mode = 'lines+markers',
+                line = list(color = 'rgb(205, 12, 24)', width = 4),
+                name = "Prediction")
 mreg <- mreg %>% add_trace(y = pcmreg$totale_casi/(N), name = 'Real data', mode = 'markers')
 mreg <- mreg %>%
   layout(
@@ -295,12 +303,12 @@ infplot
 
 
 dtplot <- plot_ly(results, 
-                   x = results$time, 
-                   y = results$D1+results$D2+results$D3,
-                   type = 'scatter',
-                   mode = 'lines+markers',
-                   line = list(color = 'rgb(205, 12, 24)', width = 4),
-                   name = "Prediction")
+                  x = results$time, 
+                  y = results$D1+results$D2+results$D3,
+                  type = 'scatter',
+                  mode = 'lines+markers',
+                  line = list(color = 'rgb(205, 12, 24)', width = 4),
+                  name = "Prediction")
 dtplot <- dtplot %>% add_trace(y = pcmreg$deceduti, name = 'Real data', mode = 'markers')
 dtplot <- dtplot %>%
   layout(
@@ -330,7 +338,15 @@ class_percent <- data_prov$Percentage[data_prov$Eta != "Total"]
 N <- pop*class_percent
 
 # Number of days to predict
-days <- nrow(pcmprov)
+#days <- nrow(pcmprov)
+# Download data from our official github repository
+dataProvinces <- read.csv("https://raw.githubusercontent.com/CEEDS-DEMM/COVID-Pro-Dataset/master/deathsItaProv.csv")
+dataProvinces <- dataProvinces[dataProvinces$Province == prov,]
+
+# Number of days to predict
+days <- nrow(dataProvinces)
+pcmprov <- pcmprov[1:days,]
+pcmreg <- pcmreg[1:days,]
 
 # Get predictions
 resultsTD <- sirdModelTD(province=prov, days=days)
@@ -441,13 +457,13 @@ get_tot_population <- function(province){
 }
 
 resultsTD <- sirdModelTD(province=prov, days=days)
-contagiati <- get_contagiati_cumul(resultsTD)
+contagiati_td <- get_contagiati_cumul(resultsTD)
 
 N <- get_tot_population(prov)
 
 mp <- plot_ly(resultsTD, 
               x = resultsTD$time, 
-              y = (contagiati$contagiati_g1+contagiati$contagiati_g2+contagiati$contagiati_g3)/N,
+              y = (contagiati_td$contagiati_g1+contagiati_td$contagiati_g2+contagiati_td$contagiati_g3)/N,
               type = 'scatter',
               mode = 'lines+markers',
               line = list(color = 'rgb(205, 12, 24)', width = 4),
@@ -460,8 +476,6 @@ mp <- mp %>%
     yaxis = list (title = "% Individuals")
   )
 mp
-
-# --------------------------------------------
 
 # Cumulative for region
 res_reg_td <- as.data.frame(matrix(0, ncol = 13, nrow = days))
@@ -529,60 +543,6 @@ dtplot <- dtplot %>%
 dtplot
 
 
-# --------------------------------------------
-# PLOTS COMPARISON: FIXED, TIME-DEP, REAL DATA
-mreg <- plot_ly(res_reg_td, 
-                x = res_reg_td$time, 
-                y = (contag_reg_td$contagiati_g1+contag_reg_td$contagiati_g2+contag_reg_td$contagiati_g3)/N,
-                type = 'scatter',
-                mode = 'lines+markers',
-                line = list(color = 'rgb(205, 12, 24)', width = 4),
-                name = "Prediction with time dep. beta")
-mreg <- mreg %>% add_trace(y = (contag_reg$contagiati_g1+contag_reg$contagiati_g2+contag_reg$contagiati_g3)/N,
-                           name = 'Prediction', mode = 'markers')
-mreg <- mreg %>% add_trace(y = pcmreg$totale_casi/(N), name = 'Real data', mode = 'markers')
-mreg <- mreg %>%
-  layout(
-    title = paste("Cumulative cases",reg),
-    xaxis = list(title = "Days"),
-    yaxis = list (title = "% Individuals")
-  )
-mreg
-
-infplot <- plot_ly(resultsTD, 
-                   x = resultsTD$time, 
-                   y = resultsTD$I1+resultsTD$I2+resultsTD$I3,
-                   type = 'scatter',
-                   mode = 'lines+markers',
-                   line = list(color = 'rgb(205, 12, 24)', width = 4),
-                   name = "Prediction with time dep. beta")
-infplot <- infplot %>% add_trace(y = results$I1+results$I2+results$I3, name = 'Prediction', mode = 'markers')
-infplot <- infplot %>% add_trace(y = pcmreg$totale_positivi, name = 'Real data', mode = 'markers')
-infplot <- infplot %>%
-  layout(
-    title = paste("Cumulative positive (infected)",reg),
-    xaxis = list(title = "Days"),
-    yaxis = list (title = "Individuals")
-  )
-infplot
-
-dtplot <- plot_ly(resultsTD, 
-                  x = resultsTD$time, 
-                  y = resultsTD$D1+resultsTD$D2+resultsTD$D3,
-                  type = 'scatter',
-                  mode = 'lines+markers',
-                  line = list(color = 'rgb(205, 12, 24)', width = 4),
-                  name = "Prediction with time dep. beta")
-dtplot <- dtplot %>% add_trace(y = results$D1+results$D2+results$D3, name = 'Prediction', mode = 'markers')
-dtplot <- dtplot %>% add_trace(y = pcmreg$deceduti, name = 'Real data', mode = 'markers')
-dtplot <- dtplot %>%
-  layout(
-    title = paste("Cumulative deaths",reg),
-    xaxis = list(title = "Days"),
-    yaxis = list (title = "Individuals")
-  )
-dtplot
-
 # --------------
 # SIRD WITH TIME DEPENDENT BETA AND REDUCED NO OF INFECTED
 
@@ -612,22 +572,22 @@ pcmprov <- pcmprov[1:days,]
 pcmreg <- pcmreg[1:days,]
 
 # Get predictions
-results <- sirdModelTDweigthed(province=prov, days=days, dataProvinces=dataProvinces)
+resultsTDw <- sirdModelTDweigthed(province=prov, days=days, dataProvinces=dataProvinces)
 
 ### SIRD plots
 par(mfrow<-c(1,1))
-ymax = max(c(results$I1/N[1],results$I2/N[2], results$I3/N[3]))
+ymax = max(c(resultsTDw$I1/N[1],resultsTDw$I2/N[2], resultsTDw$I3/N[3]))
 
 # I
-I <- plot_ly(results, 
-             x = results$time, 
-             y = results$I1/N[1],
+I <- plot_ly(resultsTDw, 
+             x = resultsTDw$time, 
+             y = resultsTDw$I1/N[1],
              type = 'scatter',
              mode = 'lines',
              line = list(color = 'rgb(205, 12, 24)', width = 4),
              name = "0-25")
-I <- I %>% add_trace(y = results$I2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
-I <- I %>% add_trace(y = results$I3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
+I <- I %>% add_trace(y = resultsTDw$I2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
+I <- I %>% add_trace(y = resultsTDw$I3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
 I <- I %>%
   layout(
     title = paste("Age-structured SIRD",prov,"- Infected"),
@@ -637,15 +597,15 @@ I <- I %>%
 I
 
 # D
-D <- plot_ly(results, 
-             x = results$time, 
-             y = results$D1/N[1],
+D <- plot_ly(resultsTDw, 
+             x = resultsTDw$time, 
+             y = resultsTDw$D1/N[1],
              type = 'scatter',
              mode = 'lines',
              line = list(color = 'rgb(205, 12, 24)', width = 4),
              name = "0-25")
-D <- D %>% add_trace(y = results$D2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
-D <- D %>% add_trace(y = results$D3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
+D <- D %>% add_trace(y = resultsTDw$D2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
+D <- D %>% add_trace(y = resultsTDw$D3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
 D <- D %>%
   layout(
     title = paste("Age-structured SIRD",prov,"- Deaths"),
@@ -655,15 +615,15 @@ D <- D %>%
 D
 
 # S
-S <- plot_ly(results, 
-             x = results$time, 
-             y = results$S1/N[1],
+S <- plot_ly(resultsTDw, 
+             x = resultsTDw$time, 
+             y = resultsTDw$S1/N[1],
              type = 'scatter',
              mode = 'lines',
              line = list(color = 'rgb(205, 12, 24)', width = 4),
              name = "0-25")
-S <- S %>% add_trace(y = results$S2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
-S <- S %>% add_trace(y = results$S3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
+S <- S %>% add_trace(y = resultsTDw$S2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
+S <- S %>% add_trace(y = resultsTDw$S3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
 S <- S %>%
   layout(
     title = paste("Age-structured SIRD",prov,"- Susceptible"),
@@ -673,15 +633,15 @@ S <- S %>%
 S
 
 # R
-R <- plot_ly(results, 
-             x = results$time, 
-             y = results$R1/N[1],
+R <- plot_ly(resultsTDw, 
+             x = resultsTDw$time, 
+             y = resultsTDw$R1/N[1],
              type = 'scatter',
              mode = 'lines',
              line = list(color = 'rgb(205, 12, 24)', width = 4),
              name = "0-25")
-R <- R %>% add_trace(y = results$R2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
-R <- R %>% add_trace(y = results$R3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
+R <- R %>% add_trace(y = resultsTDw$R2/N[2], name = '25-75', mode = 'lines', line = list(color = "green"))
+R <- R %>% add_trace(y = resultsTDw$R3/N[3], name = '>75', mode = 'lines', line = list(color = "blue"))
 R <- R %>%
   layout(
     title = paste("Age-structured SIRD",prov,"- Recovered"),
@@ -717,14 +677,14 @@ get_tot_population <- function(province){
   return(data_prov$Value[data_prov$Eta == "Total"])
 }
 
-resultsTD <- sirdModelTDweigthed(province=prov, days=days, dataProvinces = dataProvinces)
-contagiati <- get_contagiati_cumul(resultsTD)
+resultsTDw <- sirdModelTDweigthed(province=prov, days=days, dataProvinces=dataProvinces)
+contagiati_td_w <- get_contagiati_cumul(resultsTDw)
 
 N <- get_tot_population(prov)
 
-mp <- plot_ly(resultsTD, 
-              x = resultsTD$time, 
-              y = (contagiati$contagiati_g1+contagiati$contagiati_g2+contagiati$contagiati_g3)/N,
+mp <- plot_ly(resultsTDw, 
+              x = resultsTDw$time, 
+              y = (contagiati_td_w$contagiati_g1+contagiati_td_w$contagiati_g2+contagiati_td_w$contagiati_g3)/N,
               type = 'scatter',
               mode = 'lines+markers',
               line = list(color = 'rgb(205, 12, 24)', width = 4),
@@ -739,28 +699,84 @@ mp <- mp %>%
 mp
 
 # Cumulative for region
-res_reg_td <- as.data.frame(matrix(0, ncol = 13, nrow = days))
-colnames(res_reg_td) <- c("time","S1","S2","S3","I1","I2","I3","R1","R2","R3","D1","D2","D3")
+res_reg_td_w <- as.data.frame(matrix(0, ncol = 13, nrow = days))
+colnames(res_reg_td_w) <- c("time","S1","S2","S3","I1","I2","I3","R1","R2","R3","D1","D2","D3")
 
 N <- 0
 for (p in lista_prov){
-  res_td <- sirdModelTDweigthed(province=prov, days=days, dataProvinces = dataProvinces)
-  res_reg_td <- aggregate(. ~ time, rbind(res_reg_td, res_td), sum)
+  res_td_w <- sirdModelTDweigthed(province=p, days=days, dataProvinces = dataProvinces)
+  res_reg_td_w <- aggregate(. ~ time, rbind(res_reg_td_w, res_td_w), sum)
   N <- N + get_tot_population(p)
 }
 
 # Need to remove first empty row, R is misterious
-res_reg_td <- res_reg_td[-c(1),]
+res_reg_td_w <- res_reg_td_w[-c(1),]
 
-contag_reg_td <- get_contagiati_cumul(res_reg_td)
+contag_reg_td_w <- get_contagiati_cumul(res_reg_td_w)
 
+mreg <- plot_ly(res_reg_td_w, 
+                x = res_reg_td_w$time, 
+                y = (contag_reg_td_w$contagiati_g1+contag_reg_td_w$contagiati_g2+contag_reg_td_w$contagiati_g3)/N,
+                type = 'scatter',
+                mode = 'lines+markers',
+                line = list(color = 'rgb(205, 12, 24)', width = 4),
+                name = "Prediction")
+mreg <- mreg %>% add_trace(y = pcmreg$totale_casi/(N), name = 'Real data', mode = 'markers')
+mreg <- mreg %>%
+  layout(
+    title = paste("Cumulative cases",reg),
+    xaxis = list(title = "Days"),
+    yaxis = list (title = "% Individuals")
+  )
+mreg
+
+infplot <- plot_ly(resultsTDw, 
+                   x = resultsTDw$time, 
+                   y = resultsTDw$I1+resultsTDw$I2+resultsTDw$I3,
+                   type = 'scatter',
+                   mode = 'lines+markers',
+                   line = list(color = 'rgb(205, 12, 24)', width = 4),
+                   name = "Prediction")
+infplot <- infplot %>% add_trace(y = pcmreg$totale_positivi, name = 'Real data', mode = 'markers')
+infplot <- infplot %>%
+  layout(
+    title = paste("Cumulative positive (infected)",reg),
+    xaxis = list(title = "Days"),
+    yaxis = list (title = "Individuals")
+  )
+infplot
+
+
+dtplot <- plot_ly(resultsTDw, 
+                  x = resultsTDw$time, 
+                  y = resultsTDw$D1+resultsTDw$D2+resultsTDw$D3,
+                  type = 'scatter',
+                  mode = 'lines+markers',
+                  line = list(color = 'rgb(205, 12, 24)', width = 4),
+                  name = "Prediction")
+dtplot <- dtplot %>% add_trace(y = pcmreg$deceduti, name = 'Real data', mode = 'markers')
+dtplot <- dtplot %>%
+  layout(
+    title = paste("Cumulative deaths",reg),
+    xaxis = list(title = "Days"),
+    yaxis = list (title = "Individuals")
+  )
+dtplot
+
+
+# --------------------------------------------
+# PLOTS COMPARISON: FIXED, TIME-DEP, TIME-DEP w/ reduction, REAL DATA
 mreg <- plot_ly(res_reg_td, 
                 x = res_reg_td$time, 
                 y = (contag_reg_td$contagiati_g1+contag_reg_td$contagiati_g2+contag_reg_td$contagiati_g3)/N,
                 type = 'scatter',
                 mode = 'lines+markers',
                 line = list(color = 'rgb(205, 12, 24)', width = 4),
-                name = "Prediction")
+                name = "Prediction with time dep. beta")
+mreg <- mreg %>% add_trace(y = (contag_reg$contagiati_g1+contag_reg$contagiati_g2+contag_reg$contagiati_g3)/N,
+                           name = 'Prediction', mode = 'markers')
+mreg <- mreg %>% add_trace(y = (contag_reg_td_w$contagiati_g1+contag_reg_td_w$contagiati_g2+contag_reg_td_w$contagiati_g3)/N,
+                           name = 'Prediction with time dep. beta and reduction', mode = 'markers')
 mreg <- mreg %>% add_trace(y = pcmreg$totale_casi/(N), name = 'Real data', mode = 'markers')
 mreg <- mreg %>%
   layout(
@@ -776,7 +792,9 @@ infplot <- plot_ly(resultsTD,
                    type = 'scatter',
                    mode = 'lines+markers',
                    line = list(color = 'rgb(205, 12, 24)', width = 4),
-                   name = "Prediction")
+                   name = "Prediction with time dep. beta")
+infplot <- infplot %>% add_trace(y = results$I1+results$I2+results$I3, name = 'Prediction', mode = 'markers')
+infplot <- infplot %>% add_trace(y = resultsTDw$I1+resultsTDw$I2+resultsTDw$I3, name = 'Prediction with time dep. beta and reduction', mode = 'markers')
 infplot <- infplot %>% add_trace(y = pcmreg$totale_positivi, name = 'Real data', mode = 'markers')
 infplot <- infplot %>%
   layout(
@@ -786,14 +804,15 @@ infplot <- infplot %>%
   )
 infplot
 
-
 dtplot <- plot_ly(resultsTD, 
                   x = resultsTD$time, 
                   y = resultsTD$D1+resultsTD$D2+resultsTD$D3,
                   type = 'scatter',
                   mode = 'lines+markers',
                   line = list(color = 'rgb(205, 12, 24)', width = 4),
-                  name = "Prediction")
+                  name = "Prediction with time dep. beta")
+dtplot <- dtplot %>% add_trace(y = results$D1+results$D2+results$D3, name = 'Prediction', mode = 'markers')
+dtplot <- dtplot %>% add_trace(y = resultsTDw$D1+resultsTDw$D2+resultsTDw$D3, name = 'Prediction with time dep. beta and reduction', mode = 'markers')
 dtplot <- dtplot %>% add_trace(y = pcmreg$deceduti, name = 'Real data', mode = 'markers')
 dtplot <- dtplot %>%
   layout(
@@ -802,7 +821,6 @@ dtplot <- dtplot %>%
     yaxis = list (title = "Individuals")
   )
 dtplot
-
 
 # --------------------------------------------
 ### Plot alex
