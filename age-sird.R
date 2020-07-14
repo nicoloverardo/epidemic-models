@@ -306,7 +306,7 @@ sirdModelTD <- function(province="Torino", D=7, alpha=0.01,
 sirdModelTDweigthed <- function(province="Torino", D=7, alpha=0.01,
                                 rho=1/6, days=134, estMethod="Polymod",
                                 R_0_start = 5, k = 0.1, x0 = 20,
-                                R_0_end = 0.8, dataProvinces=dataProvinces)
+                                R_0_end = 0.8, dataProvinces=dataProvinces, w = 0.2)
 {
   # The SIRD model.
   calc_deriv <- function(t, y, parms)
@@ -465,15 +465,15 @@ sirdModelTDweigthed <- function(province="Torino", D=7, alpha=0.01,
          {
            d <- real_cases[t]*class_percent
            if (y[4] > -d[1]){
-             y[4] <- y[4] + (d[1] * 0.2)
+             y[4] <- y[4] + (d[1] * w)
            }
 
            if (y[5] > -d[2]){
-             y[5] <- y[5] + (d[2] * 0.2)
+             y[5] <- y[5] + (d[2] * w)
            }
 
            if (y[6] > -d[3]){
-             y[6] <- y[6] + (d[3] * 0.2)
+             y[6] <- y[6] + (d[3] * w)
            }
 
            return(y)
