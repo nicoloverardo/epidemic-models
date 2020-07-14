@@ -458,22 +458,22 @@ sirdModelTDweigthed <- function(province="Torino", D=7, alpha=0.01,
   Beta <- approxfun(x=beta_vals, method="linear", rule=2)
 
   real_cases <- dataProvinces$New_cases
-  real_cases <- sapply(real_cases, function(x){ if (x>0) { return(-x) } else { return(x) }})
+  real_cases <- sapply(real_cases, function(x){ if (x>0) { return(-x) } else { return(0) }})
 
   eventfun <- function(t, y, parms){
     with(as.list(y),
          {
            d <- real_cases[t]*class_percent
            if (y[4] > -d[1]){
-             y[4] <- y[4] + d[1]
+             y[4] <- y[4] + (d[1] * 0.2)
            }
 
            if (y[5] > -d[2]){
-             y[5] <- y[5] + d[2]
+             y[5] <- y[5] + (d[2] * 0.2)
            }
 
            if (y[6] > -d[3]){
-             y[6] <- y[6] + d[3]
+             y[6] <- y[6] + (d[3] * 0.2)
            }
 
            return(y)
