@@ -552,8 +552,8 @@ sirdModelTDWL <- function(province="Torino", D=7, alpha=0.01,
   # totRealData <- nrow(dataProvinces)
   totRealData <- 40
   dp <- dataProvinces[1:totRealData, ]
-  D_0 <- rep(dp[totRealData, "Tot_deaths"]/n_age, n_age) # will need to weight
-  I_0 <- rep(dp[totRealData, "Curr_pos_cases"]/n_age, n_age)
+  D_0 <- dp[totRealData, "Tot_deaths"]*class_percent
+  I_0 <- dp[totRealData, "Curr_pos_cases"]*class_percent
   R_0 <- +gamma*as.matrix(I_0)
   S_0 <- N-D_0-I_0-R_0
   
@@ -628,6 +628,9 @@ sirdModelTDWL <- function(province="Torino", D=7, alpha=0.01,
     return(calc_R_0(t)*gamma/max(Re(eig$values)))
   }
   
+  # Will need to check old R0 in order
+  # to determine in which part of the logistic we are
+  # (i.e.: if we passed the peak or not)
   R_0_start <- calc_R_0(totRealData)
   
   # Get beta from R0 and gamma
