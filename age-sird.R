@@ -530,10 +530,10 @@ sirdModelTDWL <- function(province="Torino", D=7, alpha=0.01,
   # #days=127
   # estMethod="Polymod"
   # province <- "Torino"
-  R_0_start = 5
-  k = 0.1
-  x0 = 20
-  R_0_end = 0.8
+  # R_0_start = 5
+  # k = 0.1
+  # x0 = 20
+  # R_0_end = 0.8
   #
   # # Recovery period
   gamma <- 1/D
@@ -549,6 +549,7 @@ sirdModelTDWL <- function(province="Torino", D=7, alpha=0.01,
   n_age <- length(class_percent)
   
   # Setting initial values with real data
+  # totRealData <- nrow(dataProvinces)
   totRealData <- 40
   dp <- dataProvinces[1:totRealData, ]
   D_0 <- rep(dp[totRealData, "Tot_deaths"]/n_age, n_age) # will need to weight
@@ -628,7 +629,6 @@ sirdModelTDWL <- function(province="Torino", D=7, alpha=0.01,
   }
   
   R_0_start <- calc_R_0(totRealData)
-  days <- days - totRealData
   
   # Get beta from R0 and gamma
   eig <- eigen(M)
@@ -638,7 +638,7 @@ sirdModelTDWL <- function(province="Torino", D=7, alpha=0.01,
   inits = c(S=S_0,I=I_0,R=R_0, D=D_0)
   
   # S,I and R for various t
-  vt <- seq(1, days, 1)
+  vt <- seq(totRealData, days, 1)
   
   # Get the beta values
   beta_vals <- sapply(X=vt,FUN=beta_fun)
@@ -667,7 +667,7 @@ sirdModelTDWL <- function(province="Torino", D=7, alpha=0.01,
          })
   }
   
-  results <- as.data.frame(ode(y=inits, times=vt, func=calc_deriv, parms=parms, events = list(func=eventfun, time=c(1:days))))
+  results <- as.data.frame(ode(y=inits, times=vt, func=calc_deriv, parms=parms, events = list(func=eventfun, time=vt)))
   
   return(results)
 }
