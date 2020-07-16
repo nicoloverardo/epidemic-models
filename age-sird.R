@@ -1,6 +1,6 @@
 library(deSolve)
 library("socialmixr")
-source("ml_transmission.R")
+source("mltransmission.R")
 
 sirdModel <- function(province="Torino", D=7, alpha=0.01, rho=1/6, R0=3, days=127, estMethod="Polymod")
 {
@@ -28,21 +28,6 @@ sirdModel <- function(province="Torino", D=7, alpha=0.01, rho=1/6, R0=3, days=12
            out <- list(c(dS,dI,dR,dD))
          })
   }
-  
-  # Days
-  # D=7
-  
-  # Death rate
-  # alpha=0.05
-  
-  # Days that take an infected individual to die
-  # rho=1/6
-  
-  # R0=3
-  # days=122
-  # estMethod="Polymod"
-  
-  # province <- "Torino"
   
   # Recovery period
   gamma <- 1/D
@@ -175,21 +160,6 @@ sirdModelTD <- function(province="Torino", D=7, alpha=0.01,
            out <- list(c(dS,dI,dR,dD))
          })
   }
-  
-  # Days
-  #D=7
-  
-  # Death rate
-  #alpha=0.05
-  
-  # Days that take an infected individual to die
-  #rho=1/6
-  
-  #R0=3
-  #days=127
-  #estMethod="Polymod"
-  
-  #province <- "Torino"
   
   # Recovery period
   gamma <- 1/D
@@ -333,26 +303,7 @@ sirdModelTDweigthed <- function(province="Torino", D=7, alpha=0.01,
          })
   }
 
-
-  # Days
-  # D=7
-  #
-  # # Death rate
-  # alpha=0.05
-  #
-  # # Days that take an infected individual to die
-  # rho=1/6
-  #
-  # #R0=3
-  # #days=127
-  # estMethod="Polymod"
-  # province <- "Torino"
-  # R_0_start = 5
-  # k = 0.1
-  # x0 = 20
-  # R_0_end = 0.8
-  #
-  # # Recovery period
+  # Recovery period
   gamma <- 1/D
 
   dataistat <- read.csv("data/istat/pop_prov_age_3_groups.csv")
