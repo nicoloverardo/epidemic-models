@@ -264,7 +264,7 @@ for (p in lista_prov){
   N <- N + get_tot_population(p)
 }
 
-# Need to remove first empty row, R is misterious
+# Need to remove first empty row, R is mysterious
 res_reg <- res_reg[-c(1),]
 
 contag_reg <- get_contagiati_cumul(res_reg)
@@ -488,7 +488,7 @@ for (p in lista_prov){
   N <- N + get_tot_population(p)
 }
 
-# Need to remove first empty row, R is misterious
+# Need to remove first empty row, R is mysterious
 res_reg_td <- res_reg_td[-c(1),]
 
 contag_reg_td <- get_contagiati_cumul(res_reg_td)
@@ -709,7 +709,7 @@ for (p in lista_prov){
   N <- N + get_tot_population(p)
 }
 
-# Need to remove first empty row, R is misterious
+# Need to remove first empty row, R is mysterious
 res_reg_td_w <- res_reg_td_w[-c(1),]
 
 contag_reg_td_w <- get_contagiati_cumul(res_reg_td_w)
@@ -988,7 +988,7 @@ for (p in lista_prov){
   N <- N + get_tot_population(p)
 }
 
-# Need to remove first empty row, R is misterious
+# Need to remove first empty row, R is mysterious
 res_reg_td_wl <- res_reg_td_wl[-c(1),]
 
 contag_reg_td_wl <- get_contagiati_cumul(res_reg_td_wl)
