@@ -1,4 +1,4 @@
-source("age-sird.R")
+source("agesird.R")
 library(plotly)
 
 # Get data and setup
@@ -547,7 +547,7 @@ dtplot
 # SIRD WITH TIME DEPENDENT BETA AND REDUCED NO OF INFECTED
 
 # Get data and setup
-source("age-sird.R")
+source("agesird.R")
 prov <- "Torino"
 reg <- "Piemonte"
 lista_prov <- c("Torino", "Alessandria", "Asti", "Biella", "Cuneo", "Novara", "Verbano-Cusio-Ossola", "Vercelli")
@@ -826,7 +826,7 @@ dtplot
 # SIRD with previous real data
 
 # Get data and setup
-source("age-sird.R")
+source("agesird.R")
 prov <- "Torino"
 reg <- "Piemonte"
 lista_prov <- c("Torino", "Alessandria", "Asti", "Biella", "Cuneo", "Novara", "Verbano-Cusio-Ossola", "Vercelli")
