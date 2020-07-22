@@ -2,6 +2,142 @@ library(deSolve)
 library(socialmixr)
 source("mltransmission.R")
 
+# ----------------
+
+sirdModelFinal <- function(data_prov, real_cases, D=7, alpha=0.01,
+                        rho=1/6, days=127,
+                        R_0_start = 4.8, k = 0.1, x0 = 20,
+                        R_0_end = 0.8, w = 0.2)
+{
+  calc_deriv <- function(t, y, parms)
+  {
+    n_compartment <- 4
+    n_age <- length(y)/n_compartment
+    
+    S <- as.matrix(y[1:n_age])
+    I <- as.matrix(y[(n_age+1):(2*n_age)])
+    R <- as.matrix(y[(2*n_age+1):(3*n_age)])
+    D <- as.matrix(y[(3*n_age+1):(4*n_age)])
+    
+    I[I<0] <- 0
+    with(as.list(parms),
+         {
+           # dS, dI, dR, S, I, R, dD, D and N will be of length n_age
+           N <- S+I+R+D
+           dS <- -as.matrix(S*Beta(t))*(as.matrix(C)%*%as.matrix(I/N))
+           dI <- -dS - gamma*as.matrix(I) - alpha*rho*as.matrix(I)
+           dR <- +gamma*as.matrix(I)
+           dD <- +alpha*rho*as.matrix(I)
+           
+           out <- list(c(dS,dI,dR,dD))
+         })
+  }
+  
+  # Recovery period
+  gamma <- 1/D
+  
+  # Get population data
+  #data_prov <- dataistatorig[dataistatorig$Territorio == province,]
+  pop <- data_prov$Value[data_prov$Eta == "Total"]
+  class_percent <- data_prov$Percentage[data_prov$Eta != "Total"]
+  
+  # Number of people in each class
+  N <- data_prov$Value[data_prov$Eta != "Total"]
+  n_age <- length(class_percent)
+  
+  # Start with one infected in each class
+  I_0 <- rep(1, n_age)
+  S_0 <- N-I_0
+  R_0 <- rep(0, n_age)
+  D_0 <- rep(0, n_age)
+  
+  # Trying to estimate the contact matrix using socialmixr: 
+  # (https://cran.r-project.org/web/packages/socialmixr/vignettes/introduction.html). 
+  # It uses POLYMOD survey data:
+  # (https://journals.plos.org/plosmedicine/article/file?id=10.1371/journal.pmed.0050074&type=printable).
+  data(polymod)
+  
+  # Prepare dataframe for 'survey.pop' param
+  # as described in the socialmixr docs.
+  survey_pop <- data_prov[1:3, c("Value", "Eta")]
+  colnames(survey_pop) <- c("population", "lower.age.limit")
+  survey_pop$lower.age.limit <- c(0, 25, 75)
+  set.seed(1234)
+  
+  # Estimate the contact matrix, using also bootstrap n=10
+  mat <- contact_matrix(polymod, 
+                        countries = "Italy",
+                        age.limits = c(0, 25, 75, 100),
+                        n = 10,
+                        survey.pop = survey_pop,
+                        symmetric = TRUE)
+  
+  # 'mat' will contain a field 'matrices' with n matrices, where
+  # n is the param we specified above in the bootstrap. 'Reduce'
+  # will average them.
+  C <- Reduce("+", lapply(mat$matrices, function(x) {x$matrix})) / length(mat$matrices)
+  #class_percent <- mat$participants$proportion
+  M <- C
+  eig <- eigen(M)
+  
+  # Logistic R0
+  calc_R_0 <- function(t) {
+    return((R_0_start-R_0_end) / (1 + exp(-k*(-t+x0))) + R_0_end)
+  }
+  
+  # Time dependent beta
+  beta_fun <- function(t){
+    return(calc_R_0(t)*gamma/max(Re(eig$values)))
+  }
+  
+  # Initial values
+  parms <- c(gamma = gamma, alpha = alpha, rho = rho, C = M)
+  y = c(S=S_0,I=I_0,R=R_0, D=D_0)
+  vt <- seq(1, days, 1)
+  
+  # Get the beta values
+  beta_vals <- sapply(X=vt, FUN=beta_fun)
+  Beta <- approxfun(x=beta_vals, method="linear", rule=2)
+  
+  # Get real number of infected
+  cases <- real_cases
+  cases <- sapply(cases, function(x){ 
+    if (x>0) return(-x) else return(0)
+  })
+  
+  # Reduce number of predicted infected with real data
+  eventfun <- function(t, y, parms){
+    with(as.list(y),
+         {
+           d <- cases[t]*class_percent
+           if (y[4] > -d[1]){
+             y[4] <- y[4] + (d[1] * w)
+           }
+
+           if (y[5] > -d[2]){
+             y[5] <- y[5] + (d[2] * w)
+           }
+
+           if (y[6] > -d[3]){
+             y[6] <- y[6] + (d[3] * w)
+           }
+           
+           return(y)
+         })
+  }
+  
+  # Solve the model
+  results <- as.data.frame(ode(y=y, times=vt, func=calc_deriv,
+                               parms=parms, events = list(func=eventfun, time=vt)))
+  
+  # Replace int time with date
+  results$time <- seq(as.Date("24 Feb 2020","%d %b %Y"), length.out = days, by=1)
+  
+  return(results)
+}
+
+# ----------------
+
 sirdModel <- function(province="Torino", D=7, alpha=0.01, rho=1/6, R0=3, days=127, estMethod="Polymod")
 {
   # The SIRD model.
