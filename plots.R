@@ -239,8 +239,7 @@ mp <- plot_ly(results,
               x = results$time, 
               y = (contagiati$contagiati_g1+contagiati$contagiati_g2+contagiati$contagiati_g3)/N,
               type = 'scatter',
-              mode = 'lines+markers',
-              line = list(color = 'rgb(205, 12, 24)', width = 4),
+              mode = 'lines',
               name = "Prediction")
 mp <- mp %>% add_trace(y = pcmprov$totale_casi/N, name = 'Real data', mode = 'markers')
 mp <- mp %>%
@@ -273,8 +272,7 @@ mreg <- plot_ly(res_reg,
                 x = res_reg$time, 
                 y = (contag_reg$contagiati_g1+contag_reg$contagiati_g2+contag_reg$contagiati_g3)/N,
                 type = 'scatter',
-                mode = 'lines+markers',
-                line = list(color = 'rgb(205, 12, 24)', width = 4),
+                mode = 'lines',
                 name = "Prediction")
 mreg <- mreg %>% add_trace(y = pcmreg$totale_casi/(N), name = 'Real data', mode = 'markers')
 mreg <- mreg %>%
@@ -285,12 +283,11 @@ mreg <- mreg %>%
   )
 mreg
 
-infplot <- plot_ly(results, 
-                   x = results$time, 
-                   y = results$I1+results$I2+results$I3,
+infplot <- plot_ly(res_reg, 
+                   x = res_reg$time, 
+                   y = res_reg$I1+res_reg$I2+res_reg$I3,
                    type = 'scatter',
-                   mode = 'lines+markers',
-                   line = list(color = 'rgb(205, 12, 24)', width = 4),
+                   mode = 'lines',
                    name = "Prediction")
 infplot <- infplot %>% add_trace(y = pcmreg$totale_positivi, name = 'Real data', mode = 'markers')
 infplot <- infplot %>%
@@ -302,12 +299,11 @@ infplot <- infplot %>%
 infplot
 
 
-dtplot <- plot_ly(results, 
-                  x = results$time, 
-                  y = results$D1+results$D2+results$D3,
+dtplot <- plot_ly(res_reg, 
+                  x = res_reg$time, 
+                  y = res_reg$D1+res_reg$D2+res_reg$D3,
                   type = 'scatter',
-                  mode = 'lines+markers',
-                  line = list(color = 'rgb(205, 12, 24)', width = 4),
+                  mode = 'lines',
                   name = "Prediction")
 dtplot <- dtplot %>% add_trace(y = pcmreg$deceduti, name = 'Real data', mode = 'markers')
 dtplot <- dtplot %>%
@@ -465,8 +461,7 @@ mp <- plot_ly(resultsTD,
               x = resultsTD$time, 
               y = (contagiati_td$contagiati_g1+contagiati_td$contagiati_g2+contagiati_td$contagiati_g3)/N,
               type = 'scatter',
-              mode = 'lines+markers',
-              line = list(color = 'rgb(205, 12, 24)', width = 4),
+              mode = 'lines',
               name = "Prediction")
 mp <- mp %>% add_trace(y = pcmprov$totale_casi/N, name = 'Real data', mode = 'markers')
 mp <- mp %>%
@@ -497,8 +492,7 @@ mreg <- plot_ly(res_reg_td,
                 x = res_reg_td$time, 
                 y = (contag_reg_td$contagiati_g1+contag_reg_td$contagiati_g2+contag_reg_td$contagiati_g3)/N,
                 type = 'scatter',
-                mode = 'lines+markers',
-                line = list(color = 'rgb(205, 12, 24)', width = 4),
+                mode = 'lines',
                 name = "Prediction")
 mreg <- mreg %>% add_trace(y = pcmreg$totale_casi/(N), name = 'Real data', mode = 'markers')
 mreg <- mreg %>%
@@ -509,9 +503,9 @@ mreg <- mreg %>%
   )
 mreg
 
-infplot <- plot_ly(resultsTD, 
-                   x = resultsTD$time, 
-                   y = resultsTD$I1+resultsTD$I2+resultsTD$I3,
+infplot <- plot_ly(res_reg_td, 
+                   x = res_reg_td$time, 
+                   y = res_reg_td$I1+res_reg_td$I2+res_reg_td$I3,
                    type = 'scatter',
                    mode = 'lines+markers',
                    line = list(color = 'rgb(205, 12, 24)', width = 4),
@@ -526,12 +520,11 @@ infplot <- infplot %>%
 infplot
 
 
-dtplot <- plot_ly(resultsTD, 
-                  x = resultsTD$time, 
-                  y = resultsTD$D1+resultsTD$D2+resultsTD$D3,
+dtplot <- plot_ly(res_reg_td, 
+                  x = res_reg_td$time, 
+                  y = res_reg_td$D1+res_reg_td$D2+res_reg_td$D3,
                   type = 'scatter',
-                  mode = 'lines+markers',
-                  line = list(color = 'rgb(205, 12, 24)', width = 4),
+                  mode = 'lines',
                   name = "Prediction")
 dtplot <- dtplot %>% add_trace(y = pcmreg$deceduti, name = 'Real data', mode = 'markers')
 dtplot <- dtplot %>%
@@ -686,8 +679,7 @@ mp <- plot_ly(resultsTDw,
               x = resultsTDw$time, 
               y = (contagiati_td_w$contagiati_g1+contagiati_td_w$contagiati_g2+contagiati_td_w$contagiati_g3)/N,
               type = 'scatter',
-              mode = 'lines+markers',
-              line = list(color = 'rgb(205, 12, 24)', width = 4),
+              mode = 'lines',
               name = "Prediction")
 mp <- mp %>% add_trace(y = pcmprov$totale_casi/N, name = 'Real data', mode = 'markers')
 mp <- mp %>%
@@ -718,8 +710,7 @@ mreg <- plot_ly(res_reg_td_w,
                 x = res_reg_td_w$time, 
                 y = (contag_reg_td_w$contagiati_g1+contag_reg_td_w$contagiati_g2+contag_reg_td_w$contagiati_g3)/N,
                 type = 'scatter',
-                mode = 'lines+markers',
-                line = list(color = 'rgb(205, 12, 24)', width = 4),
+                mode = 'lines',
                 name = "Prediction")
 mreg <- mreg %>% add_trace(y = pcmreg$totale_casi/(N), name = 'Real data', mode = 'markers')
 mreg <- mreg %>%
@@ -730,12 +721,11 @@ mreg <- mreg %>%
   )
 mreg
 
-infplot <- plot_ly(resultsTDw, 
-                   x = resultsTDw$time, 
-                   y = resultsTDw$I1+resultsTDw$I2+resultsTDw$I3,
+infplot <- plot_ly(res_reg_td_w, 
+                   x = res_reg_td_w$time, 
+                   y = res_reg_td_w$I1+res_reg_td_w$I2+res_reg_td_w$I3,
                    type = 'scatter',
-                   mode = 'lines+markers',
-                   line = list(color = 'rgb(205, 12, 24)', width = 4),
+                   mode = 'lines',
                    name = "Prediction")
 infplot <- infplot %>% add_trace(y = pcmreg$totale_positivi, name = 'Real data', mode = 'markers')
 infplot <- infplot %>%
@@ -747,12 +737,11 @@ infplot <- infplot %>%
 infplot
 
 
-dtplot <- plot_ly(resultsTDw, 
-                  x = resultsTDw$time, 
-                  y = resultsTDw$D1+resultsTDw$D2+resultsTDw$D3,
+dtplot <- plot_ly(res_reg_td_w, 
+                  x = res_reg_td_w$time, 
+                  y = res_reg_td_w$D1+res_reg_td_w$D2+res_reg_td_w$D3,
                   type = 'scatter',
-                  mode = 'lines+markers',
-                  line = list(color = 'rgb(205, 12, 24)', width = 4),
+                  mode = 'lines',
                   name = "Prediction")
 dtplot <- dtplot %>% add_trace(y = pcmreg$deceduti, name = 'Real data', mode = 'markers')
 dtplot <- dtplot %>%
@@ -770,8 +759,7 @@ mreg <- plot_ly(res_reg_td,
                 x = res_reg_td$time, 
                 y = (contag_reg_td$contagiati_g1+contag_reg_td$contagiati_g2+contag_reg_td$contagiati_g3)/N,
                 type = 'scatter',
-                mode = 'lines+markers',
-                line = list(color = 'rgb(205, 12, 24)', width = 4),
+                mode = 'lines',
                 name = "Prediction with time dep. beta")
 mreg <- mreg %>% add_trace(y = (contag_reg$contagiati_g1+contag_reg$contagiati_g2+contag_reg$contagiati_g3)/N,
                            name = 'Prediction', mode = 'markers')
@@ -786,15 +774,14 @@ mreg <- mreg %>%
   )
 mreg
 
-infplot <- plot_ly(resultsTD, 
-                   x = resultsTD$time, 
-                   y = resultsTD$I1+resultsTD$I2+resultsTD$I3,
+infplot <- plot_ly(res_reg, 
+                   x = res_reg$time, 
+                   y = res_reg$I1+res_reg$I2+res_reg$I3,
                    type = 'scatter',
-                   mode = 'lines+markers',
-                   line = list(color = 'rgb(205, 12, 24)', width = 4),
+                   mode = 'lines',
                    name = "Prediction with time dep. beta")
-infplot <- infplot %>% add_trace(y = results$I1+results$I2+results$I3, name = 'Prediction', mode = 'markers')
-infplot <- infplot %>% add_trace(y = resultsTDw$I1+resultsTDw$I2+resultsTDw$I3, name = 'Prediction with time dep. beta and reduction', mode = 'markers')
+infplot <- infplot %>% add_trace(y = res_reg_td$I1+res_reg_td$I2+res_reg_td$I3, name = 'Prediction', mode = 'markers')
+infplot <- infplot %>% add_trace(y = res_reg_td_w$I1+res_reg_td_w$I2+res_reg_td_w$I3, name = 'Prediction with time dep. beta and reduction', mode = 'markers')
 infplot <- infplot %>% add_trace(y = pcmreg$totale_positivi, name = 'Real data', mode = 'markers')
 infplot <- infplot %>%
   layout(
@@ -804,15 +791,14 @@ infplot <- infplot %>%
   )
 infplot
 
-dtplot <- plot_ly(resultsTD, 
-                  x = resultsTD$time, 
-                  y = resultsTD$D1+resultsTD$D2+resultsTD$D3,
+dtplot <- plot_ly(res_reg, 
+                  x = res_reg$time, 
+                  y = res_reg$D1+res_reg$D2+res_reg$D3,
                   type = 'scatter',
-                  mode = 'lines+markers',
-                  line = list(color = 'rgb(205, 12, 24)', width = 4),
+                  mode = 'lines',
                   name = "Prediction with time dep. beta")
-dtplot <- dtplot %>% add_trace(y = results$D1+results$D2+results$D3, name = 'Prediction', mode = 'markers')
-dtplot <- dtplot %>% add_trace(y = resultsTDw$D1+resultsTDw$D2+resultsTDw$D3, name = 'Prediction with time dep. beta and reduction', mode = 'markers')
+dtplot <- dtplot %>% add_trace(y = res_reg_td$D1+res_reg_td$D2+res_reg_td$D3, name = 'Prediction', mode = 'markers')
+dtplot <- dtplot %>% add_trace(y = res_reg_td_w$D1+res_reg_td_w$D2+res_reg_td_w$D3, name = 'Prediction with time dep. beta and reduction', mode = 'markers')
 dtplot <- dtplot %>% add_trace(y = pcmreg$deceduti, name = 'Real data', mode = 'markers')
 dtplot <- dtplot %>%
   layout(
@@ -1009,13 +995,12 @@ contag_reg_td_wl <- get_contagiati_cumul(res_reg_td_wl)
 #   )
 # mreg
 
-infreg <- append(resultsTDwl$I1+resultsTDwl$I2+resultsTDwl$I3, pcmreg$totale_positivi[1:resultsTDwl$time[1]-1], after=0)
-infplot <- plot_ly(resultsTDwl, 
+infreg <- append(res_reg_td_wl$I1+res_reg_td_wl$I2+res_reg_td_wl$I3, pcmreg$totale_positivi[1:res_reg_td_wl$time[1]-1], after=0)
+infplot <- plot_ly(res_reg_td_wl, 
                    x = 1:days, 
                    y = infreg,
                    type = 'scatter',
-                   mode = 'lines+markers',
-                   line = list(color = 'rgb(205, 12, 24)', width = 4),
+                   mode = 'lines',
                    name = "Prediction")
 infplot <- infplot %>% add_trace(y = pcmreg$totale_positivi, name = 'Real data', mode = 'markers')
 infplot <- infplot %>%
@@ -1026,13 +1011,12 @@ infplot <- infplot %>%
   )
 infplot
 
-dtreg <- append(resultsTDwl$D1+resultsTDwl$D2+resultsTDwl$D3, pcmreg$deceduti[1:resultsTDwl$time[1]-1], after=0)
-dtplot <- plot_ly(resultsTDwl, 
+dtreg <- append(res_reg_td_wl$D1+res_reg_td_wl$D2+res_reg_td_wl$D3, pcmreg$deceduti[1:res_reg_td_wl$time[1]-1], after=0)
+dtplot <- plot_ly(res_reg_td_wl, 
                   x = 1:days, 
                   y = dtreg,
                   type = 'scatter',
-                  mode = 'lines+markers',
-                  line = list(color = 'rgb(205, 12, 24)', width = 4),
+                  mode = 'lines',
                   name = "Prediction")
 dtplot <- dtplot %>% add_trace(y = pcmreg$deceduti, name = 'Real data', mode = 'markers')
 dtplot <- dtplot %>%
