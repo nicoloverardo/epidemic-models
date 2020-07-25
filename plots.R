@@ -381,8 +381,8 @@ infplot <- plot_ly(res_reg,
                    y = res_reg$I1+res_reg$I2+res_reg$I3,
                    type = 'scatter',
                    mode = 'lines',
-                   name = "Prediction with time dep. beta")
-infplot <- infplot %>% add_trace(y = res_reg_td$I1+res_reg_td$I2+res_reg_td$I3, name = 'Prediction', mode = 'lines')
+                   name = "Prediction")
+infplot <- infplot %>% add_trace(y = res_reg_td$I1+res_reg_td$I2+res_reg_td$I3, name = 'Prediction with time dep. beta', mode = 'lines')
 infplot <- infplot %>% add_trace(y = res_reg_td_w$I1+res_reg_td_w$I2+res_reg_td_w$I3, name = 'Prediction with time dep. beta and reduction', mode = 'lines')
 infplot <- infplot %>% add_trace(y = pcmreg$totale_positivi, name = 'Real data', mode = 'markers')
 infplot <- infplot %>%
@@ -398,8 +398,8 @@ dtplot <- plot_ly(res_reg,
                   y = res_reg$D1+res_reg$D2+res_reg$D3,
                   type = 'scatter',
                   mode = 'lines',
-                  name = "Prediction with time dep. beta")
-dtplot <- dtplot %>% add_trace(y = res_reg_td$D1+res_reg_td$D2+res_reg_td$D3, name = 'Prediction', mode = 'lines')
+                  name = "Prediction")
+dtplot <- dtplot %>% add_trace(y = res_reg_td$D1+res_reg_td$D2+res_reg_td$D3, name = 'Prediction with time dep. beta', mode = 'lines')
 dtplot <- dtplot %>% add_trace(y = res_reg_td_w$D1+res_reg_td_w$D2+res_reg_td_w$D3, name = 'Prediction with time dep. beta and reduction', mode = 'lines')
 dtplot <- dtplot %>% add_trace(y = pcmreg$deceduti, name = 'Real data', mode = 'markers')
 dtplot <- dtplot %>%
