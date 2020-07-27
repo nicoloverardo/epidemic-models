@@ -13,7 +13,7 @@ import numpy as np
 from google.colab import drive
 drive.mount('/content/drive')
 
-data = pd.read_csv("/content/drive/My Drive/Colab Notebooks/covid/DCIS_POPRES1_25052020170201288.csv")
+data = pd.read_csv("/content/drive/My Drive/Colab Notebooks/covid/DCIS_POPRES1_27072020130534278.csv")
 
 df = data.loc[(data.SEXISTAT1 == 9) &
                 (data.STATCIV2 == 99) &
@@ -45,7 +45,7 @@ for provincia in df.Territorio.unique():
 
   df_final = pd.concat([df_final, tmp])
 
-df_final.to_csv("/content/drive/My Drive/Colab Notebooks/covid/pop_prov_age_3_groups.csv", index=False)
+df_final.to_csv("/content/drive/My Drive/Colab Notebooks/covid/pop_prov_age_3_groups_2020.csv", index=False)
 
 df_final = pd.DataFrame()
 
@@ -66,4 +66,4 @@ for provincia in df.Territorio.unique():
 
   df_final = pd.concat([df_final, tmp])
 
-df_final.to_csv("/content/drive/My Drive/Colab Notebooks/covid/pop_prov_age_4_groups.csv", index=False)
+df_final.to_csv("/content/drive/My Drive/Colab Notebooks/covid/pop_prov_age_4_groups_2020.csv", index=False)
